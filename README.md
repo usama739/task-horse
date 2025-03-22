@@ -45,3 +45,11 @@ php artisan serve
 ```
 
 Visit: http://127.0.0.1:8000 🎉
+
+## Default Credentials
+### Admin
+- Email: admin@portal.com
+- Password: admin123
+### Manager
+- Email: manager@portal.com
+- Password: manager123
