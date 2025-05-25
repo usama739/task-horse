@@ -6,10 +6,11 @@ use Illuminate\Http\Request;
 use App\Models\Task;
 use App\Models\Category;
 use App\Models\User;
+use App\Jobs\UploadTaskFileJob;
 
 class TaskController extends Controller {
     public function getEvents() {
-        if (auth()->user()->role == 'user') {
+        if (auth()->user()->can('user')) {
             $tasks = Task::where('user_id', auth()->id())->whereNotNull('due_date')->get();
         } else {
             $tasks = Task::whereNotNull('due_date')->get();
@@ -32,7 +33,7 @@ class TaskController extends Controller {
 
 
     public function index() {
-        if (auth()->user()->role == 'user') {
+        if (auth()->user()->can('user')) {
             $tasks = Task::where('user_id', auth()->id())->orderBy('created_at', 'desc')->get();
             $users = []; 
         } else {
@@ -60,17 +61,27 @@ class TaskController extends Controller {
             return response()->json(['error' => 'Unauthorized'], 403);
         }
 
-        $request->validate([
-            'title' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'status' => 'required|string|in:Pending,In-progress,Completed',
-            'priority' => 'required|in:Low,Medium,High',
-            'category_id' => 'nullable|exists:categories,id',
-            'user_id' => 'required|exists:users,id',
-            'due_date' => 'nullable|date'
-        ]);
+        // $request->validate([
+        //     'title' => 'required|string|max:255',
+        //     'description' => 'nullable|string',
+        //     'status' => 'required|string|in:Pending,In-progress,Completed',
+        //     'priority' => 'required|in:Low,Medium,High',
+        //     'category_id' => 'nullable|exists:categories,id',
+        //     'user_id' => 'required|exists:users,id',
+        //     'due_date' => 'nullable|date',
+        // ]);
 
-        Task::create($request->all());
+        $task = Task::create($request->all());
+
+        // Handle multiple file uploads via queue
+        if ($request->hasFile('attachments')) {
+            foreach ($request->file('attachments') as $file) {
+                $originalName = $file->getClientOriginalName();
+                $path = $file->storeAs('temp', $originalName, 'local');
+                UploadTaskFileJob::dispatch($path, $task->id, auth()->id());
+            }
+        }
+
         return redirect()->route('tasks.index')->with('success', 'Task added successfully.');
     }
     
