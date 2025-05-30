@@ -23,6 +23,7 @@ class HomeController extends Controller
      */
     public function index()
     {
-        return redirect()->route('tasks.index');
+        return view('home');
+        // return redirect()->route('tasks.index');
     }
 }
