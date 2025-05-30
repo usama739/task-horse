@@ -35,9 +35,11 @@ class TaskController extends Controller {
     public function index() {
         if (auth()->user()->can('user')) {
             $tasks = Task::where('user_id', auth()->id())->orderBy('created_at', 'desc')->get();
+            $timelineTasks = Task::where('user_id', auth()->id())->orderBy('due_date', 'desc')->get();
             $users = []; 
         } else {
             $tasks = Task::orderBy('created_at', 'desc')->get();
+            $timelineTasks = Task::orderBy('due_date', 'desc')->get();
 
             if (auth()->user()->role == 'admin') {
                 $users = User::whereIn('role', ['manager', 'user'])->get();
@@ -52,7 +54,7 @@ class TaskController extends Controller {
         $completedCount = $tasks->where('status', 'Completed')->count();
 
         $categories = Category::all();
-        return view('tasks.index', compact('tasks', 'categories', 'users', 'pendingCount', 'inProgressCount', 'completedCount'));
+        return view('tasks.index', compact('tasks', 'timelineTasks', 'categories', 'users', 'pendingCount', 'inProgressCount', 'completedCount'));
     }
 
 
