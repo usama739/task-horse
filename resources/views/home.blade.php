@@ -72,7 +72,7 @@
             <div class="flex items-center justify-between mb-8">
                 <h2 class="text-xl font-semibold text-white">Tasks Timeline</h2>
             </div>
-            <ul class="space-y-4">
+            <ul class="space-y-4 text-white">
                 <li class="relative pl-6">
                     <span class="absolute left-0 top-1 w-3 h-3 bg-blue-500 rounded-full"></span>
                     <span class="pl-5 text-blue-200 font-semibold">2025-06-01</span> — Task "Design UI" created
