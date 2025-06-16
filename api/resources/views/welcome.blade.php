@@ -39,10 +39,10 @@
     <section class="relative flex-1 flex items-center justify-center bg-gradient-to-br from-blue-900 via-blue-800 to-blue-700 py-24 px-6">
         <div class="max-w-3xl mx-auto text-center">
             <h1 class="text-5xl md:text-6xl font-extrabold leading-tight mb-6 bg-gradient-to-r from-blue-400 via-cyan-400 to-green-300 bg-clip-text text-white drop-shadow-lg">
-                Organize. Collaborate. Succeed.
+                Stay on Track. Get Things Done.
             </h1>
             <p class="text-lg md:text-2xl text-blue-100 mb-10 font-medium">
-                The all-in-one SaaS platform for modern teams to manage tasks, files, and productivity — <span class="text-green-300 font-semibold">securely powered by AWS Cloud Storage</span>.
+                A cloud-powered task management tool built for teams who value speed, simplicity, and clarity
             </p>
             <a href="register" class="inline-block bg-gradient-to-r from-cyan-400 to-blue-600 hover:from-blue-500 hover:to-blue-500 text-white font-bold py-4 px-5 rounded-lg shadow-lg text-lg transition mt-10">Start Free Trial</a>
             <div class="mt-8 flex flex-wrap justify-center gap-4">
