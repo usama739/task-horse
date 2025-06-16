@@ -1,4 +1,4 @@
-import { SignedIn, SignedOut, SignInButton, UserButton } from '@clerk/clerk-react'
+import { SignedIn, SignedOut,SignInButton, SignUpButton, UserButton } from '@clerk/clerk-react'
 import './App.css'
 
 
@@ -6,25 +6,36 @@ function App() {
   return (
     <div className="text-white font-sans min-h-screen flex flex-col" style={{ background: '#0e1525' }}>
     {/* Header */}
-    <header className="w-full px-6 py-4 flex justify-between items-center bg-gradient-to-r from-blue-900 via-blue-800 to-blue-700 shadow-lg">
-      <img src="/images/logo4.png" alt="TaskHorse Logo" className="h-10 w-15" />
+    <header className="w-full px-6 py-4 flex justify-between items-center bg-gradient-to-r from-black via-blue-950 to-blue-700 shadow-lg">
+      <img src="logo4.png" alt="TaskHorse Logo" className="h-10" />
       <nav className="flex items-center gap-4">
-        <a href="/login" className="px-4 py-2 rounded-md font-semibold bg-white text-blue-700 hover:bg-gray-100 transition shadow">
+        
+        <SignedOut>
+          <SignInButton />
+          <SignUpButton />       
+        </SignedOut>
+
+        <SignedIn>
+          <UserButton />
+        </SignedIn>
+
+        {/* <a href="/login" className="px-4 py-2 rounded-md font-semibold bg-white text-blue-700 hover:bg-gray-100 transition shadow">
           Log in
         </a>
         <a href="/register" className="px-4 py-2 rounded-md font-semibold bg-blue-500 hover:bg-blue-600 transition text-white shadow">
           Register
-        </a>
+        </a> */}
       </nav>
     </header>
 
     {/* Hero */}
-    <section className="relative flex-1 flex items-center justify-center bg-gradient-to-br from-blue-900 via-blue-800 to-blue-700 py-24 px-6">
-      <div className="max-w-3xl mx-auto text-center z-10">
-        <h1 className="text-5xl md:text-6xl font-extrabold leading-tight mb-6 bg-gradient-to-r from-blue-400 via-cyan-400 to-green-300 bg-clip-text text-white drop-shadow-lg">
+    <section className="relative flex-1 flex items-center justify-center bg-gradient-to-br from-black via-blue-950 to-blue-700 py-24 px-6 clip-bottom-diagonal">
+      
+      <div className="max-w-3xl mx-auto text-center z-10 fade-up">
+        <h1 className="text-5xl md:text-5xl font-extrabold leading-tight mb-6 bg-gradient-to-r from-blue-400 via-cyan-400 to-green-300 bg-clip-text text-white  parallax-title drop-shadow-lg">
           Stay on Track. Get Things Done.
         </h1>
-        <p className="text-lg md:text-2xl text-blue-100 mb-10 font-medium">
+        <p className=" text-blue-100 mb-10 font-medium">
           A cloud‑powered task management tool built for teams who value speed, simplicity, and clarity
         </p>
         <a href="/register" className="inline-block bg-gradient-to-r from-cyan-400 to-blue-600 hover:from-blue-500 hover:to-blue-500 text-white font-bold py-4 px-5 rounded-lg shadow-lg text-lg transition mt-10">
@@ -49,7 +60,7 @@ function App() {
     </section>
 
     {/* Features */}
-    <section id="features" className="py-24" style={{ background: '#161f30' }}>
+    <section id="features" className="py-24 clip-top-diagonal clip-bottom-diagonal" style={{ background: '#161f30' }}>
       <div className="container mx-auto px-6">
         <h2 className="text-3xl md:text-4xl font-bold text-center text-white">
           Features That Empower Your Team
@@ -61,7 +72,7 @@ function App() {
             { icon: 'fa-chart-line', color: 'text-green-400', title: 'Statistics & Insights', desc: 'Visual stats for pending, in‑progress, and completed tasks.' },
             { icon: 'fa-lock', color: 'text-green-400', title: 'Enterprise‑Grade Security', desc: 'All files are encrypted and stored in the AWS cloud, ensuring your data is always protected.' },
           ].map((f, i) => (
-            <div key={i} className="rounded-xl p-8 shadow-lg hover:scale-105 transition" style={{ background: '#1a2238' }}>
+            <div key={i} className="rounded-xl p-8 shadow-lg transform transition duration-500 hover:rotate-1 hover:scale-105 hover:shadow-2xl" style={{ background: '#1a2238' }}>
               <i className={`fas ${f.icon} text-5xl ${f.color} mb-4`} />
               <h3 className="text-xl font-semibold mb-2">{f.title}</h3>
               <p className="text-blue-100">{f.desc}</p>
@@ -72,7 +83,7 @@ function App() {
     </section>
 
     {/* Workflow */}
-    <section className="py-24 bg-gradient-to-br from-[#1a2238] via-[#161f30] to-[#0e1525]">
+    <section className="py-24" style={{ background: '#0e1525' }}>
       <div className="container mx-auto px-6">
         <h2 className="text-3xl md:text-4xl font-bold text-center text-white">How It Works</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-12 mt-10">
@@ -81,7 +92,7 @@ function App() {
             { icon: 'fa-layer-group', title: '2. Organize & Assign', desc: 'Create projects, assign tasks, and upload files. Every file is encrypted and stored in the AWS cloud for maximum security.' },
             { icon: 'fa-rocket', title: '3. Track & Succeed', desc: 'Monitor progress, collaborate, and share files with confidence—your data is always safe with cloud‑based encryption.' },
           ].map((step, i) => (
-            <div key={i} className="flex flex-col items-center">
+            <div key={i} className="flex flex-col items-center zoom-in">
               <div className="bg-blue-700 rounded-full p-5 mb-4 shadow-lg">
                 <i className={`fas ${step.icon} text-3xl text-white`} />
               </div>
@@ -94,7 +105,7 @@ function App() {
     </section>
 
     {/* Call To Action */}
-    <section id="signup" className="py-24 bg-gradient-to-r from-blue-700 via-blue-600 to-cyan-500 text-center">
+    <section id="signup" className="py-24 bg-gradient-to-r from-black via-blue-600 to-black text-center">
       <h3 className="text-3xl md:text-4xl font-bold mb-4 text-white">Ready to Supercharge Your Productivity?</h3>
       <p className="text-white text-lg mb-8">Join teams who get more done every day with TaskHorse SaaS.</p>
       <a href="/register" className="bg-white text-blue-700 font-bold px-5 py-4 rounded-lg hover:bg-gray-100 transition text-lg shadow-lg">
