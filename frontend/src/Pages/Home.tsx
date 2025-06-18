@@ -8,14 +8,14 @@ import Footer from '../Components/Footer'
 
 function Home() {
   return (
-    <>
+    <div className='text-white font-sans min-h-screen flex flex-col' >
         <Header />
         <HeroSection />
         <Features />
         <WorkFlow />
         <CallToAction />
         <Footer />
-    </>
+    </div>
   )
 }
 
