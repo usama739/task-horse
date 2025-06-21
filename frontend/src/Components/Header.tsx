@@ -49,8 +49,8 @@ const Header: FC<HeaderProps> = ({ isHome  }) => {
                 </Link>
               </li>
               <li>
-                <Link to="/users" className={getNavLinkClass("/users")}>
-                  Users
+                <Link to="/team-members" className={getNavLinkClass("/team-members")}>
+                  Team Members
                 </Link>
               </li>
               <li>

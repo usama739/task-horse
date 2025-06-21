@@ -22,18 +22,20 @@ Route::post('/logout', function () {
 
 Route::get('/home', [HomeController::class, 'index'])->name('home');
 
-
 Route::get('/users', [UserController::class, 'index'])->name('users.index');
 Route::post('/users', [UserController::class, 'store'])->name('users.store');
 Route::get('/users/{user}/edit', [UserController::class, 'edit'])->name('users.edit');
 Route::put('/users/{user}', [UserController::class, 'update'])->name('users.update');
 Route::delete('/users/{user}', [UserController::class, 'destroy'])->name('users.destroy');
 
+                                ///// Editable Endpoints /////
 
 Route::get('/categories', [CategoryController::class, 'index'])->name('categories.index');
 Route::post('/categories', [CategoryController::class, 'store'])->name('categories.store');
 Route::put('/categories/{id}', [CategoryController::class, 'update'])->name('categories.update');
 Route::delete('/categories/{id}', [CategoryController::class, 'destroy'])->name('categories.destroy');
+
+                                ///// UnEditable Endpoints /////
 
 Route::get('/tasks/calendar', [TaskController::class, 'getEvents'])->name('tasks.events');
 Route::get('/tasks', [TaskController::class, 'index'])->name('tasks.index');
