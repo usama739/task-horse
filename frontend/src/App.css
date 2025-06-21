@@ -133,7 +133,9 @@ button[component="SignUpButton"] {
 }
 
 
-
+.backdrop-blur-sm {
+  backdrop-filter: blur(4px);
+}
 
 #root {
   min-height: 100vh;

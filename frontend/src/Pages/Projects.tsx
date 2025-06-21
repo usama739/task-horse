@@ -110,21 +110,21 @@ function Projects() {
               </tr>
             ))} */}
 
-            {projects.length === 0 && (
+            {/* {projects.length === 0 && ( */}
               <tr>
                 <td colSpan={3} className="py-6 text-gray-500">
-                  No projects found.
+                  No project found.
                 </td>
               </tr>
-            )}
+            {/* )} */}
           </tbody>
         </table>
       </div>
 
       {/* Add/Edit Project Modal */}
       {showFormModal && (
-        <div className="fixed inset-0 z-50 bg-black bg-opacity-60 backdrop-blur-sm flex justify-center items-center">
-          <div className="text-white rounded-xl shadow-2xl w-full max-w-xl" style={{ background: "#161f30" }}>
+        <div className="fixed inset-0 z-50 backdrop-blur-sm flex justify-center items-center">
+          <div className="text-white bg-[#161f30] rounded-xl shadow-2xl w-full max-w-xl">
             <div className="flex justify-between items-center rounded-xs border-b border-blue-700 px-6 py-4">
               <h5 className="text-2xl font-semibold">{projectForm.id ? "Edit Project" : "Add Project"}</h5>
               <button className="text-blue-400 hover:text-red-600 text-2xl font-bold cursor-pointer" onClick={() => setShowFormModal(false)}>&times;</button>
@@ -163,7 +163,7 @@ function Projects() {
 
       {/* Delete Confirmation Modal */}
       {showDeleteModal && (
-        <div className="fixed inset-0 z-50 bg-black bg-opacity-60 backdrop-blur-sm flex justify-center items-center">
+        <div className="fixed inset-0 z-50 backdrop-blur-sm flex justify-center items-center">
           <div className="text-white rounded-xl shadow-2xl w-full max-w-md p-6" style={{ background: "#161f30" }}>
             <div className="flex justify-between border-b border-blue-700 mb-4">
               <h5 className="text-xl font-semibold">Confirm Deletion</h5>

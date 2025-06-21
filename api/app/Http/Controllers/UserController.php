@@ -15,7 +15,10 @@ class UserController extends Controller
         
         $users = User::where('role', 'user')->orderBy('created_at', 'desc')->get();
         return view('users.index', compact('users'));
+
+        // return response()->json($users);
     }
+
 
     public function store(Request $request){
         $request->validate([
