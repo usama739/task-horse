@@ -9,14 +9,14 @@ use Illuminate\Support\Facades\Hash;
 class UserController extends Controller
 {
     public function index(){
-        if (auth()->user()->role !== 'admin') {
-            abort(403, 'Unauthorized access.');
-        }
+        // if (auth()->user()->role !== 'admin') {
+        //     abort(403, 'Unauthorized access.');
+        // }
         
         $users = User::where('role', 'user')->orderBy('created_at', 'desc')->get();
-        return view('users.index', compact('users'));
+        // return view('users.index', compact('users'));
 
-        // return response()->json($users);
+        return response()->json($users);
     }
 
 
@@ -34,7 +34,11 @@ class UserController extends Controller
             'role' => 'user'
         ]);
 
-        return redirect()->route('users.index')->with('success', 'User created successfully.');
+         return response()->json([
+            'message' => 'User created successfully.',
+            'data' => $user
+        ], 201);
+        // return redirect()->route('users.index')->with('success', 'User created successfully.');
     }
 
     
@@ -54,13 +58,14 @@ class UserController extends Controller
             'email' => $request->email,
         ]);
 
-        return redirect()->route('users.index')->with('success', 'User updated successfully.');
+        return response()->json(['success' => 'User updated successfully.'], 200);
     }
 
     
     public function destroy(User $user){
         $user->delete();
-        return redirect()->route('users.index')->with('success', 'User deleted successfully.');
+        return response()->json(['success' => 'User deleted successfully.'], 200);
+        // return redirect()->route('users.index')->with('success', 'User deleted successfully.');
     }
 }
 

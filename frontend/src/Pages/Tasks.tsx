@@ -1,6 +1,10 @@
 import React, { useEffect, useState, type FormEvent, type ChangeEvent } from "react";
 import axios from "axios";
 import Header from "../Components/Header";
+import FullCalendar from '@fullcalendar/react';
+import dayGridPlugin from '@fullcalendar/daygrid';
+import listPlugin from '@fullcalendar/list';
+import interactionPlugin from '@fullcalendar/interaction';
 
 interface Task {
   id: number;
@@ -15,6 +19,7 @@ interface Task {
 
 const TasksPage: React.FC = () => {
   const [tasks, setTasks] = useState<Task[]>([]);
+  const [timelineTasks, setTimelineTasks] = useState<Task[]>([]);
   const [counts, setCounts] = useState({ pending: 0, inProgress: 0, completed: 0 });
   const [search, setSearch] = useState("");
   const [filterPriority, setFilterPriority] = useState("");
@@ -42,6 +47,15 @@ const TasksPage: React.FC = () => {
   useEffect(() => {
     axios.get<any>('/api/categories').then(res => setCategories(res.data));
     axios.get<any>('/api/users').then(res => setUsers(res.data));
+
+    axios.get<any>('/api/timeline-tasks') 
+      .then(res => {
+        setTimelineTasks(res.data);
+      })
+      .catch(err => {
+        console.error('Failed to load timeline tasks', err);
+      });
+
     fetchTasks();
   }, []);
 
@@ -257,7 +271,49 @@ const TasksPage: React.FC = () => {
         </div>
       </div>
 
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-16">
+        {/* Calendar Section */}
+        {/* <div className="mb-4">
+          <FullCalendar
+            plugins={[dayGridPlugin, listPlugin, interactionPlugin]}
+            initialView="dayGridMonth"
+            headerToolbar={{
+              left: 'prev,next today',
+              center: 'title',
+              right: 'dayGridMonth,listWeek'
+            }}
+            events={(fetchInfo, successCallback, failureCallback) => {
+              axios.get('/api/tasks/events')
+                .then(response => successCallback(response.data))
+                .catch(err => failureCallback(err));
+            }}
+            eventClick={(info) => {
+              alert(`Task: ${info.event.title}\nDue Date: ${info.event.start?.toISOString().split('T')[0]}`);
+            }}
+          />
+        </div> */}
 
+        {/* Timeline Section */}
+        {/* <div>
+          <h2 className="text-center text-2xl font-bold mb-4">Task Timeline</h2>
+          <div className="main-timeline">
+            {timelineTasks.map((task, index) => (
+              <div key={task.id} className={`timeline flex ${index % 2 === 0 ? 'left' : 'right'} mb-6`}>
+                <div className="card">
+                  <div className="card-body p-6 w-full max-w-md">
+                    <h3 className="text-lg font-semibold text-gray-400 mb-2">
+                      {new Date(task.due_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                    </h3>
+                    <div className="text-xl font-bold text-gray-100 mb-1">{task.title}</div>
+                    <div className="text-gray-400 text-sm mb-2">{task.user.name}</div>
+                    <p className={`font-semibold ${getPriorityColor(task.priority)}`}>{task.priority}</p>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div> */}
+      </div>
 
 
       {showModal && (
