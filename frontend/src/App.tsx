@@ -4,6 +4,7 @@ import Home from './Pages/Home'
 import Projects from './Pages/Projects'
 import TeamMembers from './Pages/TeamMembers';
 import Tasks from './Pages/Tasks';
+import NotFound from './Pages/NotFound';
 
 function App() {
   return (
@@ -15,7 +16,7 @@ function App() {
         <Route path="/team-members" element={<TeamMembers />} />
         <Route path="/tasks" element={<Tasks />} />
         {/* <Route path="/dashboard" element={<Dashboard />} /> */}
-        {/* <Route path="*" element={<NotFound />} /> */}
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </Router>
   )

@@ -10,6 +10,7 @@ interface TeamMember {
 }
 
 const TeamMembers: React.FC = () => {
+  const [isLoading, setIsLoading] = useState(true);
   const [members, setMembers] = useState<TeamMember[]>([]);
   const [modalOpen, setModalOpen] = useState(false);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
@@ -22,13 +23,14 @@ const TeamMembers: React.FC = () => {
   }, []);
 
   const fetchMembers = async () => {
+    setIsLoading(true);
     try {
       const res = await axios.get<TeamMember[]>('/users');
       setMembers(res.data);
-      console.log('Fetched team members:', res.data);
     } catch (error) {
       console.error('Error fetching team members:', error);
-      // Handle error appropriately, e.g., show a notification or alert
+    } finally {
+      setIsLoading(false);
     }
     
   };
@@ -56,7 +58,6 @@ const TeamMembers: React.FC = () => {
 
   const handleDelete = async () => {
     try {
-      console.log('Deleting team member:', deleteTarget);
       await axios.delete(`/users/${deleteTarget.id}`);
       Swal.fire({
         icon: 'success',
@@ -84,10 +85,9 @@ const TeamMembers: React.FC = () => {
 
     try {
       const res: any = await axios[method](url, currentMember);
-      console.log('Response from server:', res.data); 
       Swal.fire({
         icon: 'success',
-        title: res.data.message || 'User saved successfully!',
+        title: 'User saved successfully!',
         timer: 1500,
         showConfirmButton: false,
       });
@@ -128,33 +128,43 @@ const TeamMembers: React.FC = () => {
               </tr>
             </thead>
             <tbody style={{ background: '#0c1220' }}>
-              {members.map((member) => (
-                <tr key={member.id} className="border-b">
-                  <td className="px-6 py-4">{member.name}</td>
-                  <td>{member.email}</td>
-                  <td className="py-4">
-                    <button
-                      className="px-4 py-2 text-sm font-medium text-white bg-yellow-500 hover:bg-yellow-600 rounded-s-lg"
-                      onClick={() => openEditModal(member)}
-                    >
-                      Edit
-                    </button>
-                    <button
-                      className="px-4 py-2 text-sm font-medium text-white bg-red-500 hover:bg-red-600 rounded-e-lg"
-                      onClick={() => handleDeleteModal(member)}
-                    >
-                      Delete
-                    </button>
+              {isLoading ? (
+                <tr>
+                  <td colSpan={3}>
+                    <div className="flex justify-center items-center py-8">
+                      <div className="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+                      <span className="ml-2 text-gray-500">Loading...</span>
+                    </div>
                   </td>
                 </tr>
-              ))}
-              {members.length === 0 && (
-              <tr>
-                <td colSpan={3} className="py-6 text-gray-500">
-                  No team member found.
-                </td>
-              </tr>
-             )} 
+              ) : members.length === 0 ? (
+                <tr>
+                  <td colSpan={3} className="py-6 text-gray-500">
+                    No team member found.
+                  </td>
+                </tr>
+              ) : (
+                members.map((member) => (
+                  <tr key={member.id} className="border-b">
+                    <td className="px-6 py-4">{member.name}</td>
+                    <td>{member.email}</td>
+                    <td className="py-4">
+                      <button
+                        className="px-4 py-2 text-sm font-medium text-white bg-yellow-500 hover:bg-yellow-600 rounded-s-lg"
+                        onClick={() => openEditModal(member)}
+                      >
+                        Edit
+                      </button>
+                      <button
+                        className="px-4 py-2 text-sm font-medium text-white bg-red-500 hover:bg-red-600 rounded-e-lg"
+                        onClick={() => handleDeleteModal(member)}
+                      >
+                        Delete
+                      </button>
+                    </td>
+                  </tr>
+                ))
+              )}                
             </tbody>
           </table>
         </div>
