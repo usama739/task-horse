@@ -1,6 +1,7 @@
 import React, { useEffect, useState, type FormEvent } from 'react';
 import Header from '../Components/Header';
-import axios from 'axios';
+import axios from '../axios'; 
+import Swal from 'sweetalert2';
 
 interface TeamMember {
   id: number;
@@ -21,8 +22,15 @@ const TeamMembers: React.FC = () => {
   }, []);
 
   const fetchMembers = async () => {
-    const res = await axios.get<TeamMember[]>('/api/users');
-    setMembers(res.data);
+    try {
+      const res = await axios.get<TeamMember[]>('/users');
+      setMembers(res.data);
+      console.log('Fetched team members:', res.data);
+    } catch (error) {
+      console.error('Error fetching team members:', error);
+      // Handle error appropriately, e.g., show a notification or alert
+    }
+    
   };
 
   const openAddModal = () => {
@@ -47,19 +55,52 @@ const TeamMembers: React.FC = () => {
   };
 
   const handleDelete = async () => {
-    await axios.delete(`/api/users/${deleteTarget.id}`);
-    setDeleteModalOpen(false);
-    fetchMembers();
+    try {
+      console.log('Deleting team member:', deleteTarget);
+      await axios.delete(`/users/${deleteTarget.id}`);
+      Swal.fire({
+        icon: 'success',
+        title: 'User deleted successfully',
+        timer: 1500,
+        showConfirmButton: false,
+      });
+      setDeleteModalOpen(false);
+      fetchMembers();
+    } catch (error: any) {
+      console.error('Error deleting team member:', error);
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: error.response?.data?.message || 'Something went wrong',
+      });
+    } 
   };
+
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     const method = isEditMode ? 'put' : 'post';
-    const url = isEditMode ? `/api/users/${currentMember.id}` : '/api/users';
+    const url = isEditMode ? `users/${currentMember.id}` : '/users';
 
-    await axios[method](url, currentMember);
-    setModalOpen(false);
-    fetchMembers();
+    try {
+      const res: any = await axios[method](url, currentMember);
+      console.log('Response from server:', res.data); 
+      Swal.fire({
+        icon: 'success',
+        title: res.data.message || 'User saved successfully!',
+        timer: 1500,
+        showConfirmButton: false,
+      });
+      setModalOpen(false);
+      fetchMembers();
+    } catch (error: any) {
+      console.error('Error submitting team member:', error);
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: error.response?.data?.message || 'Something went wrong',
+      });
+    }
   };
 
   return (
@@ -87,7 +128,7 @@ const TeamMembers: React.FC = () => {
               </tr>
             </thead>
             <tbody style={{ background: '#0c1220' }}>
-              {/* {members.map((member) => (
+              {members.map((member) => (
                 <tr key={member.id} className="border-b">
                   <td className="px-6 py-4">{member.name}</td>
                   <td>{member.email}</td>
@@ -106,14 +147,14 @@ const TeamMembers: React.FC = () => {
                     </button>
                   </td>
                 </tr>
-              ))} */}
-              {/* {members.length === 0 && ( */}
+              ))}
+              {members.length === 0 && (
               <tr>
                 <td colSpan={3} className="py-6 text-gray-500">
                   No team member found.
                 </td>
               </tr>
-            {/* )} */}
+             )} 
             </tbody>
           </table>
         </div>
@@ -156,6 +197,7 @@ const TeamMembers: React.FC = () => {
                     <label className="block text-gray-400 mb-1">Password</label>
                     <input
                       type="password"
+                      min={6}
                       onChange={(e) => setCurrentMember({ ...currentMember, password: e.target.value } as Partial<TeamMember>)}
                       className="w-full border border-gray-600 rounded-lg px-3 py-2 bg-[#1a2238] focus:outline-none focus:ring-2 focus:ring-blue-500"
                       required
@@ -188,26 +230,35 @@ const TeamMembers: React.FC = () => {
             className="fixed inset-0 z-50 backdrop-blur-sm flex justify-center items-center"
             onClick={(e) => e.target === e.currentTarget && setDeleteModalOpen(false)}
           >
-            <div className="text-white bg-[#161f30] rounded-xl shadow-2xl w-full max-w-md p-6 animate-fade-in">
-              <h3 className="text-xl font-semibold mb-4">Confirm Deletion</h3>
-              <p className="mb-6">
-                Are you sure you want to delete{' '}
-                <strong>{deleteTarget.name}</strong>?
-              </p>
-              <div className="flex justify-center gap-3">
-                <button
-                  className="bg-gray-200 text-gray-700 font-semibold rounded-lg px-4 py-2"
-                  onClick={() => setDeleteModalOpen(false)}
-                >
-                  Cancel
-                </button>
-                <button
-                  className="bg-red-600 hover:bg-red-800 text-white font-semibold rounded-lg px-4 py-2"
-                  onClick={handleDelete}
-                >
-                  Yes, Delete
-                </button>
+
+            <div className="text-white bg-[#161f30] rounded-xl shadow-2xl w-full max-w-md animate-fade-in">
+              <div className="flex justify-between items-center rounded-xs border-b border-blue-700 px-6 py-4">
+                <h5 className="text-xl font-semibold">Confirm Deletion</h5>
+                <button className="text-blue-400 hover:text-red-600 text-2xl font-bold cursor-pointer" onClick={() => setDeleteModalOpen(false)}>&times;</button>
               </div>
+              <div className='p-6'>
+                <p className="mb-8">
+                  Are you sure you want to delete{' '}
+                  <strong>{deleteTarget.name}</strong>?
+                </p>
+
+                <div className="flex justify-center gap-3">
+                  <button
+                    className="bg-gray-200 text-gray-700 font-semibold rounded-lg px-4 py-2 cursor-pointer"
+                    onClick={() => setDeleteModalOpen(false)}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    className="bg-red-600 hover:bg-red-800 text-white font-semibold rounded-lg px-4 py-2 cursor-pointer"
+                    onClick={handleDelete}
+                  >
+                    Yes, Delete
+                  </button>
+                </div>
+              </div>
+              
+              
             </div>
           </div>
         )}
