@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
 import type { FC, FormEvent } from "react";
 import Header from '../Components/Header'
+import axios from '../axios'; 
+import Swal from 'sweetalert2'
 
 interface Project {
   id: string;
@@ -9,6 +10,7 @@ interface Project {
 }
 
 function Projects() {
+  const [isLoading, setIsLoading] = useState(true);
   const [projects, setProjects] = useState<Project[]>([]);
   const [showFormModal, setShowFormModal] = useState<boolean>(false);
   const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false);
@@ -20,9 +22,15 @@ function Projects() {
   }, []);
 
   const fetchProjects = async () => {
-    const res = await axios.get<Project[]>("/api/projects"); // adjust API endpoint if needed
-    console.log(res.data)
-    setProjects(res.data);
+    setIsLoading(true);
+    try {
+      const res = await axios.get<Project[]>('/projects');
+      setProjects(res.data);
+    } catch (error) {
+      console.error('Error fetching projects:', error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const openAddProjectModal = () => {
@@ -35,31 +43,66 @@ function Projects() {
     setShowFormModal(true);
   };
 
+
   const openDeleteProjectModal = (project: Project) => {
     setDeleteTarget(project);
     setShowDeleteModal(true);
   };
 
+
   const handleProjectFormChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setProjectForm({ ...projectForm, name: e.target.value });
   };
 
+
   const handleProjectFormSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const url = projectForm.method === "POST" ? "/api/projects" : `/api/projects/${projectForm.id}`;
-    await axios({
-      url,
-      method: projectForm.method,
-      data: { name: projectForm.name },
-    });
-    setShowFormModal(false);
-    fetchProjects();
+    const url = projectForm.method === "POST" ? "/projects" : `projects/${projectForm.id}`;
+
+    try {
+      await axios({
+        url,
+        method: projectForm.method,
+        data: { name: projectForm.name },
+      });
+      Swal.fire({
+        icon: 'success',
+        title: 'Poject saved successfully!',
+        timer: 1500,
+        showConfirmButton: false,
+      });
+
+      setShowFormModal(false);
+      fetchProjects();
+      
+    } catch (error: any) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: error.response?.data?.message || 'Something went wrong',
+      });
+    }
   };
 
+
   const handleDeleteProject = async () => {
-    await axios.delete(`/api/projects/${deleteTarget.id}`);
-    setShowDeleteModal(false);
-    fetchProjects();
+    try {
+      await axios.delete(`/projects/${deleteTarget.id}`);
+      Swal.fire({
+        icon: 'success',
+        title: 'Project deleted successfully',
+        timer: 1000000,
+        showConfirmButton: false,
+      });
+      setShowDeleteModal(false);
+      fetchProjects();
+    } catch (error: any) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: error.response?.data?.message || 'Something went wrong',
+      });
+    }
   };
 
 
@@ -88,7 +131,24 @@ function Projects() {
           </thead>
 
           <tbody style={{ background: "#0c1220" }}>
-            {/* {projects.length > 0 && projects.map((project) => (
+
+            {isLoading ? (
+              <tr>
+                <td colSpan={3}>
+                  <div className="flex justify-center items-center py-8">
+                    <div className="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+                    <span className="ml-2 text-gray-500">Loading...</span>
+                  </div>
+                </td>
+              </tr>
+            ) : projects.length === 0 ? (
+              <tr>
+                <td colSpan={3} className="py-6 text-gray-500">
+                  No project found.
+                </td>
+              </tr>
+            ) : (
+              projects.map((project) => (
               <tr key={project.id} className="border-b">
                 <td className="px-6 py-4">{project.name}</td>
                 <td>
@@ -108,15 +168,9 @@ function Projects() {
                   </div>
                 </td>
               </tr>
-            ))} */}
+            ))
+            )} 
 
-            {/* {projects.length === 0 && ( */}
-              <tr>
-                <td colSpan={3} className="py-6 text-gray-500">
-                  No project found.
-                </td>
-              </tr>
-            {/* )} */}
           </tbody>
         </table>
       </div>
@@ -164,26 +218,30 @@ function Projects() {
       {/* Delete Confirmation Modal */}
       {showDeleteModal && (
         <div className="fixed inset-0 z-50 backdrop-blur-sm flex justify-center items-center">
-          <div className="text-white rounded-xl shadow-2xl w-full max-w-md p-6" style={{ background: "#161f30" }}>
-            <div className="flex justify-between border-b border-blue-700 mb-4">
+          <div className="text-white rounded-xl shadow-2xl w-full max-w-md" style={{ background: "#161f30" }}>
+            <div className="flex justify-between border-b border-blue-700 px-6 py-4">
               <h5 className="text-xl font-semibold">Confirm Deletion</h5>
               <button className="text-blue-400 hover:text-red-600 text-2xl font-bold" onClick={() => setShowDeleteModal(false)}>&times;</button>
             </div>
+            <div className="p-6">
             <p className="mb-6">Are you sure you want to delete <strong>{deleteTarget.name}</strong>?</p>
-            <div className="flex justify-center gap-2">
-              <button
-                className="bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold rounded-lg px-4 py-2"
-                onClick={() => setShowDeleteModal(false)}
-              >
-                Cancel
-              </button>
-              <button
-                className="bg-red-600 hover:bg-red-800 text-white font-semibold rounded-lg px-4 py-2"
-                onClick={handleDeleteProject}
-              >
-                Yes, Delete
-              </button>
+              <div className="flex justify-center gap-2">
+                <button
+                  className="bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold rounded-lg px-4 py-2"
+                  onClick={() => setShowDeleteModal(false)}
+                >
+                  Cancel
+                </button>
+                <button
+                  className="bg-red-600 hover:bg-red-800 text-white font-semibold rounded-lg px-4 py-2"
+                  onClick={handleDeleteProject}
+                >
+                  Yes, Delete
+                </button>
+              </div>
             </div>
+
+            
           </div>
         </div>
       )}
