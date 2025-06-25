@@ -5,6 +5,7 @@ import Projects from './Pages/Projects'
 import TeamMembers from './Pages/TeamMembers';
 import Tasks from './Pages/Tasks';
 import NotFound from './Pages/NotFound';
+import ViewTask from './Pages/ViewTask';
 
 function App() {
   return (
@@ -15,6 +16,9 @@ function App() {
         <Route path="/projects" element={<Projects />} />
         <Route path="/team-members" element={<TeamMembers />} />
         <Route path="/tasks" element={<Tasks />} />
+        <Route path="/tasks" element={<Tasks />} />
+        <Route path="/task/:id" element={<ViewTask />} />
+        {/* Uncomment the following line if you have a Dashboard component */}
         {/* <Route path="/dashboard" element={<Dashboard />} /> */}
         <Route path="*" element={<NotFound />} />
       </Routes>

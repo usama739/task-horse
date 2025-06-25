@@ -39,12 +39,12 @@ Route::get('/home', [HomeController::class, 'index'])->name('home');
 
                                 ///// UnEditable Endpoints /////
 
-Route::get('/tasks/calendar', [TaskController::class, 'getEvents'])->name('tasks.events');
-Route::get('/tasks', [TaskController::class, 'index'])->name('tasks.index');
-Route::post('/tasks', [TaskController::class, 'store'])->name('tasks.store');
-Route::put('/tasks/{task}', [TaskController::class, 'update'])->name('tasks.update');
-Route::delete('/tasks/{task}', [TaskController::class, 'destroy'])->name('tasks.destroy');
-Route::get('/tasks/{id}', [TaskController::class, 'show'])->name('tasks.show');
+// Route::get('/tasks/calendar', [TaskController::class, 'getEvents'])->name('tasks.events');
+// Route::get('/tasks', [TaskController::class, 'index'])->name('tasks.index');
+// Route::post('/tasks', [TaskController::class, 'store'])->name('tasks.store');
+// Route::put('/tasks/{task}', [TaskController::class, 'update'])->name('tasks.update');
+// Route::delete('/tasks/{task}', [TaskController::class, 'destroy'])->name('tasks.destroy');
+// Route::get('/tasks/{id}', [TaskController::class, 'show'])->name('tasks.show');
 
-Route::post('/tasks/{id}/comments', [TaskCommentController::class, 'store'])->name('comments.store');
-Route::delete('/comments/{id}', [TaskCommentController::class, 'destroy'])->name('comments.destroy');
+// Route::post('/tasks/{id}/comments', [TaskCommentController::class, 'store'])->name('comments.store');
+// Route::delete('/comments/{id}', [TaskCommentController::class, 'destroy'])->name('comments.destroy');

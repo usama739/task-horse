@@ -4,17 +4,19 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Task;
-use App\Models\Category;
+use App\Models\Project;
 use App\Models\User;
 use App\Jobs\UploadTaskFileJob;
 
 class TaskController extends Controller {
     public function getEvents() {
-        if (auth()->user()->can('user')) {
-            $tasks = Task::where('user_id', auth()->id())->whereNotNull('due_date')->get();
-        } else {
-            $tasks = Task::whereNotNull('due_date')->get();
-        }
+        // if (auth()->user()->can('user')) {
+        //     $tasks = Task::where('user_id', auth()->id())->whereNotNull('due_date')->get();
+        // } else {
+        //     $tasks = Task::whereNotNull('due_date')->get();
+        // }
+
+        $tasks = Task::whereNotNull('due_date')->get();
 
         $events = [];
         foreach ($tasks as $task) {
@@ -31,30 +33,54 @@ class TaskController extends Controller {
         return response()->json($events);
     }
 
-
     public function index() {
-        if (auth()->user()->can('user')) {
-            $tasks = Task::where('user_id', auth()->id())->orderBy('created_at', 'desc')->get();
-            $timelineTasks = Task::where('user_id', auth()->id())->orderBy('due_date', 'desc')->get();
-            $users = []; 
-        } else {
-            $tasks = Task::orderBy('created_at', 'desc')->get();
-            $timelineTasks = Task::orderBy('due_date', 'desc')->get();
+        $tasks = Task::orderBy('created_at', 'desc')->get();
+        // dd($tasks);
+        return response()->json($tasks);
+    }
 
-            if (auth()->user()->role == 'admin') {
-                $users = User::whereIn('role', ['manager', 'user'])->get();
-            } else {
-                $users = User::where('role', 'user')->get();
-            }
-        }
 
-         // Count tasks based on status
-        $pendingCount = $tasks->where('status', 'Pending')->count();
-        $inProgressCount = $tasks->where('status', 'In-Progress')->count();
-        $completedCount = $tasks->where('status', 'Completed')->count();
+    // public function index() {
+    //     if (auth()->user()->can('user')) {
+    //         $tasks = Task::where('user_id', auth()->id())->orderBy('created_at', 'desc')->get();
+    //         $timelineTasks = Task::where('user_id', auth()->id())->orderBy('due_date', 'desc')->get();
+    //         $users = []; 
+    //     } else {
+    //         $tasks = Task::orderBy('created_at', 'desc')->get();
+    //         $timelineTasks = Task::orderBy('due_date', 'desc')->get();
 
-        $categories = Category::all();
-        return view('tasks.index', compact('tasks', 'timelineTasks', 'categories', 'users', 'pendingCount', 'inProgressCount', 'completedCount'));
+    //         if (auth()->user()->role == 'admin') {
+    //             $users = User::whereIn('role', ['manager', 'user'])->get();
+    //         } else {
+    //             $users = User::where('role', 'user')->get();
+    //         }
+    //     }
+
+    //      // Count tasks based on status
+    //     $pendingCount = $tasks->where('status', 'Pending')->count();
+    //     $inProgressCount = $tasks->where('status', 'In-Progress')->count();
+    //     $completedCount = $tasks->where('status', 'Completed')->count();
+
+    //     $categories = Category::all();
+
+
+    //     return view('tasks.index', compact('tasks', 'timelineTasks', 'categories', 'users', 'pendingCount', 'inProgressCount', 'completedCount'));
+    // }
+
+
+
+    
+    
+    public function getTimeline() {
+        // if (auth()->user()->can('user')) {
+        //     $tasks = Task::where('user_id', auth()->id())->orderBy('due_date', 'desc')->get();
+        // } else {
+        //     $tasks = Task::orderBy('due_date', 'desc')->get();
+        // }
+
+        $timelineTasks = Task::orderBy('due_date', 'desc')->get();
+
+        return response()->json($timelineTasks, 200);
     }
 
 
@@ -84,14 +110,14 @@ class TaskController extends Controller {
             }
         }
 
-        return redirect()->route('tasks.index')->with('success', 'Task added successfully.');
+        return response()->json(['success' => 'Task added successfully.'], 201);
     }
     
 
     public function update(Request $request, Task $task) {
-        if (auth()->user()->role == 'user') {
-            return response()->json(['error' => 'Unauthorized'], 403);
-        }
+        // if (auth()->user()->role == 'user') {
+        //     return response()->json(['error' => 'Unauthorized'], 403);
+        // }
 
         $request->validate([
             'title' => 'required|string|max:255',
@@ -104,23 +130,26 @@ class TaskController extends Controller {
         ]);
 
         $task->update($request->all());
-        return redirect()->route('tasks.index')->with('success', 'Task updated successfully.');
+        return response()->json(['success' => 'Task updated successfully.'], 200);
+        // return redirect()->route('tasks.index')->with('success', 'Task updated successfully.');
     }
 
 
     public function destroy(Task $task) {
-        if (auth()->user()->role == 'user') {
-            return response()->json(['error' => 'Unauthorized'], 403);
-        }
+        // if (auth()->user()->role == 'user') {
+        //     return response()->json(['error' => 'Unauthorized'], 403);
+        // }
         
         $task->delete();
-        return redirect()->route('tasks.index')->with('success', 'Task deleted successfully.');
+        return response()->json(['success' => 'Task deleted successfully.'], 200);
+        // return redirect()->route('tasks.index')->with('success', 'Task deleted successfully.');
     }
 
 
     public function show($id) {
         $task = Task::with('comments.user')->findOrFail($id);
-        return view('tasks.show', compact('task'));
+        return response()->json($task);
+        // return view('tasks.show', compact('task'));
     }
 
 

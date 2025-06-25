@@ -1,9 +1,11 @@
 <?php
 
 namespace App\Models;
-
-use Illuminate\Database\Eloquent\Model;
+use App\Models\Project;
+use App\Models\TaskComment;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 
 class Task extends Model
 {
@@ -11,7 +13,7 @@ class Task extends Model
     protected $fillable = ['title', 'description', 'priority', 'status', 'category_id', 'user_id', 'due_date'];
 
     public function category() {
-        return $this->belongsTo(Category::class);
+        return $this->belongsTo(Project::class);
     }
 
     public function comments(){
