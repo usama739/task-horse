@@ -91,7 +91,7 @@ function Projects() {
       Swal.fire({
         icon: 'success',
         title: 'Project deleted successfully',
-        timer: 1000000,
+        timer: 1500,
         showConfirmButton: false,
       });
       setShowDeleteModal(false);

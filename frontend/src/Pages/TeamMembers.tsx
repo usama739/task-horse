@@ -81,7 +81,7 @@ const TeamMembers: React.FC = () => {
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     const method = isEditMode ? 'put' : 'post';
-    const url = isEditMode ? `users/${currentMember.id}` : '/users';
+    const url = isEditMode ? `/users/${currentMember.id}` : '/users';
 
     try {
       const res: any = await axios[method](url, currentMember);

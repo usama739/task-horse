@@ -1,10 +1,12 @@
 import React, { useEffect, useState, type FormEvent, type ChangeEvent } from "react";
-import axios from "axios";
+import axios from "../axios";
 import Header from "../Components/Header";
 import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import listPlugin from '@fullcalendar/list';
 import interactionPlugin from '@fullcalendar/interaction';
+import Swal from 'sweetalert2'
+import { useNavigate } from "react-router-dom";
 
 interface Task {
   id: number;
@@ -12,12 +14,14 @@ interface Task {
   description: string;
   priority: "Low" | "Medium" | "High";
   status: "Pending" | "In-Progress" | "Completed";
-  category?: { name: string };
+  project?: { name: string };
   due_date?: string;  
   assignedTo?: string;
 }
 
 const TasksPage: React.FC = () => {
+  const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(true);
   const [tasks, setTasks] = useState<Task[]>([]);
   const [timelineTasks, setTimelineTasks] = useState<Task[]>([]);
   const [counts, setCounts] = useState({ pending: 0, inProgress: 0, completed: 0 });
@@ -40,49 +44,57 @@ const TasksPage: React.FC = () => {
     user_id: '',
   });
 
-  const [categories, setCategories] = useState([]);
+  const [projects, setprojects] = useState([]);
   const [users, setUsers] = useState([]);
   const [attachments, setAttachments] = useState<FileList | null>(null);
 
   useEffect(() => {
-    axios.get<any>('/api/categories').then(res => setCategories(res.data));
-    axios.get<any>('/api/users').then(res => setUsers(res.data));
-
-    axios.get<any>('/api/timeline-tasks') 
+    fetchTasks();
+    
+    axios.get<any>('timeline-tasks') 
       .then(res => {
         setTimelineTasks(res.data);
       })
       .catch(err => {
         console.error('Failed to load timeline tasks', err);
       });
-
-    fetchTasks();
   }, []);
 
-//   useEffect(() => {
-//     const filtered = tasks.filter((t) => {
-//       const matchSearch = t.title.toLowerCase().includes(search.toLowerCase());
-//       const matchPriority = filterPriority ? t.priority === filterPriority : true;
-//       const matchStatus = filterStatus ? t.status === filterStatus : true;
-//       return matchSearch && matchPriority && matchStatus;
-//     });
+  useEffect(() => {
+    const filtered = tasks.filter((t) => {
+      const matchSearch = t.title.toLowerCase().includes(search.toLowerCase());
+      const matchPriority = filterPriority ? t.priority === filterPriority : true;
+      const matchStatus = filterStatus ? t.status === filterStatus : true;
+      return matchSearch && matchPriority && matchStatus;
+    });
 
-//     setCounts({
-//       pending: filtered.filter((t) => t.status === "Pending").length,
-//       inProgress: filtered.filter((t) => t.status === "In-Progress").length,
-//       completed: filtered.filter((t) => t.status === "Completed").length,
-//     });
-//   }, [tasks, search, filterPriority, filterStatus]);
+    setCounts({
+      pending: filtered.filter((t) => t.status === "Pending").length,
+      inProgress: filtered.filter((t) => t.status === "In-Progress").length,
+      completed: filtered.filter((t) => t.status === "Completed").length,
+    });
+  }, [tasks, search, filterPriority, filterStatus]);
 
-  const fetchTasks = async () => {
-    const res = await axios.get<Task[]>("/api/tasks");
+  
+const fetchTasks = async () => {
+  setIsLoading(true);
+  try {
+    const res = await axios.get<Task[]>("/tasks");
+    console.log('Fetched tasks:', res.data);
     setTasks(res.data);
+  } catch (error) {
+    console.error('Error fetching tasks:', error);
+  } finally {
+    setIsLoading(false);
+  }
+   
   };
+
 
 // Load task data when editing
   useEffect(() => {
     if (taskId !== null) {
-      axios.get<any>(`/api/tasks/${taskId}`).then(res => {
+      axios.get<any>(`tasks/${taskId}`).then(res => {
         setFormData(res.data);
         setShowModal(true);
       });
@@ -100,6 +112,10 @@ const TasksPage: React.FC = () => {
       category_id: '',
       user_id: '',
     });
+
+    axios.get<any>('/projects').then(res => setprojects(res.data));
+    axios.get<any>('/users').then(res => setUsers(res.data));
+
     setShowModal(true);
   };
 
@@ -111,27 +127,67 @@ const TasksPage: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (taskId) {
-      await axios.put(`/api/tasks/${taskId}`, formData);
+      try {
+        await axios.put(`tasks/${taskId}`, formData);
+      } catch (error: any) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: error.response?.data?.message || 'Something went wrong',
+        });
+      }
     } else {
-      await axios.post('/api/tasks', formData);
+      try {
+        await axios.post('/tasks', formData);
+      } catch (error: any) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: error.response?.data?.message || 'Something went wrong',
+        });
+      }
     }
+
+    Swal.fire({
+        icon: 'success',
+        title: 'Task Saved successfully!',
+        timer: 1500,
+        showConfirmButton: false,
+      });
     handleClose();
-    window.location.reload(); // or refetch tasks state
+    fetchTasks();
   };
+
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
+
 
   const handleDeleteModal = (task: Task) => {
     setDeleteTarget(task);
     setDeleteModalOpen(true);
   };
 
+
   const handleDelete = async () => {
-    await axios.delete(`/api/tasks/${deleteTarget.id}`);
-    setDeleteModalOpen(false);
-    fetchTasks();
+    try {
+      await axios.delete(`tasks/${deleteTarget.id}`);
+      Swal.fire({
+        icon: 'success',
+        title: 'Task deleted successfully!',
+        timer: 1500,
+        showConfirmButton: false,
+      });
+      setDeleteModalOpen(false);
+      fetchTasks();
+    } catch (error: any) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: error.response?.data?.message || 'Something went wrong',
+      });
+    }
   };
 
   
@@ -171,7 +227,7 @@ const TasksPage: React.FC = () => {
               <div className="relative">
                   <div className="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
                       <svg className="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
-                          <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" strokeWidth="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"></path>
+                          <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"></path>
                       </svg>
                   </div>
                   <input 
@@ -224,48 +280,59 @@ const TasksPage: React.FC = () => {
                 <th className="px-6 py-3">Category</th>
                 <th className="px-6 py-3">Due Date</th>
                 {/* {currentUserRole !== 'user' && */}
-                <th className="px-6 py-3">Assigned To</th>
+                {/* <th className="px-6 py-3">Assigned To</th> */}
                 {/* } */}
                 <th className="px-6 py-3">Actions</th>
               </tr>
             </thead>
             <tbody style={{ background: '#0c1220' }}>
-              {/* {tasks.map(task => (
-                <tr key={task.id} className="border-b">
-                  <td className="px-6 py-4">{task.title}</td>
-                  <td>
-                    <span className={`inline-block rounded px-2 py-1 text-xs font-semibold text-white bg-${getPriorityColor(task.priority)}-500 bg-opacity-20`}>
-                      {task.priority}
-                    </span>
-                  </td>
-                  <td>
-                    <span className={`inline-block rounded px-2 py-1 text-xs font-semibold text-white bg-${getStatusColor(task.status)}-500 bg-opacity-20`}>
-                      {task.status}
-                    </span>
-                  </td>
-                  <td>{task.category?.name || 'No Category'}</td>
-                  <td>{task.due_date ? formatDate(task.due_date) : 'No Due Date'}</td>
-                  {currentUserRole !== 'user' &&  
-                      <td>{task.user?.name}</td>
-                  }
-                  <td>
-                    <div className="inline-flex gap-1">
-                      <button className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded">View</button>
-                      {currentUserRole !== 'user' && (
-                        <>
-                          <button className="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1 rounded" onClick={() => handleEditClick(task.id)}>Edit</button>
-                          <button className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded" onClick={() => handleDeleteModal(task)}>Delete</button>
-                        </>
-                      )}
+
+
+              {isLoading ? (
+                <tr>
+                  <td colSpan={7}>
+                    <div className="flex justify-center items-center py-8">
+                      <div className="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+                      <span className="ml-2 text-gray-500">Loading...</span>
                     </div>
                   </td>
                 </tr>
-              ))} */}
-              {/* {filteredTasks.length === 0 && ( */}
+              ) : tasks.length === 0 ? (
                 <tr>
-                  <td colSpan={7} className="text-center py-6 text-gray-400">No task found.</td>
+                  <td colSpan={7} className="text-center py-6 text-gray-500">No task found.</td>
                 </tr>
-              {/* )} */}
+              ) : (
+                tasks.map(task => (
+                  <tr key={task.id} className="border-b">
+                    <td className="px-6 py-4">{task.title}</td>
+                    <td>
+                      <span className={`inline-block rounded px-2 py-1 text-xs font-semibold text-white bg-${getPriorityColor(task.priority)}-500 bg-opacity-20`}>
+                        {task.priority}
+                      </span>
+                    </td>
+                    <td>
+                      <span className={`inline-block rounded px-2 py-1 text-xs font-semibold text-white bg-${getStatusColor(task.status)}-500 bg-opacity-20`}>
+                        {task.status}
+                      </span>
+                    </td>
+                    <td>{task.project?.name || 'No Project'}</td>
+                    <td>{task.due_date ? formatDate(task.due_date) : 'No Due Date'}</td>
+                    {/* /{currentUserRole !== 'user' &&   */}
+                        {/* <td>{task.assignedTo}</td> */}
+                    {/* } */}
+                    <td>
+                      <div className="inline-flex overflow-hidden shadow-sm py-6" role="group">
+                        <button className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-s-lg text-sm" onClick={() => navigate(`/task/${task.id}`)}>View</button>
+                        {/* {currentUserRole !== 'user' && ( */}
+                            <button className="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 text-sm" onClick={() => handleEditClick(task.id)}>Edit</button>
+                            <button className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-e-lg text-sm" onClick={() => handleDeleteModal(task)}>Delete</button>
+                        {/* )} */}
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              )} 
+
             </tbody>
           </table>
         </div>
@@ -273,7 +340,7 @@ const TasksPage: React.FC = () => {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-16">
         {/* Calendar Section */}
-        {/* <div className="mb-4">
+        <div className="mb-4">
           <FullCalendar
             plugins={[dayGridPlugin, listPlugin, interactionPlugin]}
             initialView="dayGridMonth"
@@ -283,18 +350,18 @@ const TasksPage: React.FC = () => {
               right: 'dayGridMonth,listWeek'
             }}
             events={(fetchInfo, successCallback, failureCallback) => {
-              axios.get('/api/tasks/events')
-                .then(response => successCallback(response.data))
+              axios.get('tasks/events')
+                .then(response => successCallback(response.data as any[]))
                 .catch(err => failureCallback(err));
             }}
             eventClick={(info) => {
               alert(`Task: ${info.event.title}\nDue Date: ${info.event.start?.toISOString().split('T')[0]}`);
             }}
           />
-        </div> */}
+        </div>
 
         {/* Timeline Section */}
-        {/* <div>
+        <div>
           <h2 className="text-center text-2xl font-bold mb-4">Task Timeline</h2>
           <div className="main-timeline">
             {timelineTasks.map((task, index) => (
@@ -302,17 +369,17 @@ const TasksPage: React.FC = () => {
                 <div className="card">
                   <div className="card-body p-6 w-full max-w-md">
                     <h3 className="text-lg font-semibold text-gray-400 mb-2">
-                      {new Date(task.due_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                      {/* {new Date(task.due_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })} */}
                     </h3>
                     <div className="text-xl font-bold text-gray-100 mb-1">{task.title}</div>
-                    <div className="text-gray-400 text-sm mb-2">{task.user.name}</div>
+                    <div className="text-gray-400 text-sm mb-2">{task.assignedTo}</div>
                     <p className={`font-semibold ${getPriorityColor(task.priority)}`}>{task.priority}</p>
                   </div>
                 </div>
               </div>
             ))}
           </div>
-        </div> */}
+        </div>
       </div>
 
 
@@ -365,10 +432,10 @@ const TasksPage: React.FC = () => {
               <div>
                 <label className="block text-gray-400 mb-1">Category</label>
                 <select name="category_id" value={formData.category_id} onChange={handleChange} className="w-full bg-[#1a2238] p-2 rounded-lg border border-gray-600 mb-2">
-                  <option value="">Select Category</option>
-                  {/* {categories.map((cat: any) => (
+                  <option value="">Select Project</option>
+                  {projects.map((cat: any) => (
                     <option key={cat.id} value={cat.id}>{cat.name}</option>
-                  ))} */}
+                  ))}
                 </select>
               </div>
 
@@ -376,9 +443,9 @@ const TasksPage: React.FC = () => {
                 <label className="block text-gray-400 mb-1">Assign To</label>
                 <select name="user_id" value={formData.user_id} onChange={handleChange} className="w-full bg-[#1a2238] p-2 rounded-lg border border-gray-600 mb-2">
                   <option value="">Select User</option>
-                  {/* {users.map((user: any) => (
+                  {users.map((user: any) => (
                     <option key={user.id} value={user.id}>{user.name}</option>
-                  ))} */}
+                  ))}
                 </select>
               </div>
               
