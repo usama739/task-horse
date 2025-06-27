@@ -2,6 +2,8 @@
 
 @theme{
 --font-sans: "Inter","ui-sans-serif","system-ui","-apple-system","system-ui","Segoe UI","Roboto","Helvetica Neue","Arial","Noto Sans","sans-serif","Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji"
+  /* --color-green-500: oklch(0.723 0.219 149.579); */
+  /* --color-indigo-500: oklch(0.585 0.233 277.117); */
 }
 
 
@@ -354,6 +356,7 @@ button{
 
 #root {
   min-height: 100vh;
-  background-color: #0e1525
+  background-color: #0e1525;
+  padding: 20px
 }
 
