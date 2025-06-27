@@ -34,19 +34,21 @@ const TasksPage: React.FC = () => {
     
   const [showModal, setShowModal] = useState(false);
   const [taskId, setTaskId] = useState<number | null>(null);
+  
+  const [projects, setprojects] = useState([]);
+  const [users, setUsers] = useState([]);
+  const [attachments, setAttachments] = useState<FileList | null>(null);
   const [formData, setFormData] = useState({
     title: '',
     description: '',
     priority: '',
     status: '',
     due_date: '',
-    category_id: '',
+    project_id: '',
     user_id: '',
   });
 
-  const [projects, setprojects] = useState([]);
-  const [users, setUsers] = useState([]);
-  const [attachments, setAttachments] = useState<FileList | null>(null);
+  
 
   useEffect(() => {
     fetchTasks();
@@ -109,13 +111,12 @@ const fetchTasks = async () => {
       priority: '',
       status: '',
       due_date: '',
-      category_id: '',
+      project_id: '',
       user_id: '',
     });
 
     axios.get<any>('/projects').then(res => setprojects(res.data));
     axios.get<any>('/users').then(res => setUsers(res.data));
-
     setShowModal(true);
   };
 
@@ -124,11 +125,42 @@ const fetchTasks = async () => {
     setTaskId(null);
   };
 
+  const openEditModal = (task: Task) => {
+    setFormData({
+      title: task.title || '',
+      description: task.description || '',
+      priority: task.priority || '',
+      status: task.status || '',
+      due_date: task.due_date || '',
+      project_id: (task as any).project_id || '',
+      user_id: (task as any).user_id || '',      
+    });
+    setTaskId(task.id);
+    setShowModal(true);
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    const data = new FormData();
+
+    // Append text fields
+    Object.entries(formData).forEach(([key, value]) => {
+      data.append(key, value);
+    });
+
+    // Append files
+    if (attachments) {
+      Array.from(attachments).forEach((file) => {
+        data.append('attachments[]', file); // assuming you're uploading multiple files
+      });
+    }
+
     if (taskId) {
       try {
-        await axios.put(`tasks/${taskId}`, formData);
+        await axios.put(`tasks/${taskId}`, data, {
+          headers: { 'Content-Type': 'multipart/form-data' },
+        });
       } catch (error: any) {
         Swal.fire({
           icon: 'error',
@@ -138,7 +170,9 @@ const fetchTasks = async () => {
       }
     } else {
       try {
-        await axios.post('/tasks', formData);
+        await axios.post('/tasks', data, {
+          headers: { 'Content-Type': 'multipart/form-data' },
+        });
       } catch (error: any) {
         Swal.fire({
           icon: 'error',
@@ -219,7 +253,7 @@ const fetchTasks = async () => {
       </div>
 
 
-      <div className="shadow rounded-lg p-6 mt-24">
+      <div className="shadow rounded-lg p-3 mt-24">
         <div className="flex flex-col md:flex-row md:justify-between md:items-center mb-6 border-b border-blue-500 pb-4">
           <h4 className="text-3xl font-semibold mb-4 md:mb-0 text-white">Tasks</h4>
 
@@ -277,7 +311,7 @@ const fetchTasks = async () => {
                 <th className="px-6 py-3">Title</th>
                 <th className="px-6 py-3">Priority</th>
                 <th className="px-6 py-3">Status</th>
-                <th className="px-6 py-3">Category</th>
+                <th className="px-6 py-3">Project</th>
                 <th className="px-6 py-3">Due Date</th>
                 {/* {currentUserRole !== 'user' && */}
                 {/* <th className="px-6 py-3">Assigned To</th> */}
@@ -324,7 +358,7 @@ const fetchTasks = async () => {
                       <div className="inline-flex overflow-hidden shadow-sm py-6" role="group">
                         <button className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-s-lg text-sm" onClick={() => navigate(`/task/${task.id}`)}>View</button>
                         {/* {currentUserRole !== 'user' && ( */}
-                            <button className="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 text-sm" onClick={() => handleEditClick(task.id)}>Edit</button>
+                            <button className="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 text-sm" onClick={() => openEditModal(task)}>Edit</button>
                             <button className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-e-lg text-sm" onClick={() => handleDeleteModal(task)}>Delete</button>
                         {/* )} */}
                       </div>
@@ -384,8 +418,9 @@ const fetchTasks = async () => {
 
 
       {showModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm" style={{ marginTop: '300px' }}>
-          <div className="bg-[#161f30] text-white rounded-xl w-full max-w-xl shadow-xl">
+        <div id="task-modal" className="fixed inset-0 z-50 overflow-y-auto  backdrop-blur-sm">
+           <div className="flex justify-center min-h-screen px-4 py-10">
+            <div className="bg-[#161f30] text-white rounded-xl w-full max-w-xl shadow-xl">
             <div className="flex justify-between items-center mb-4 border-b border-blue-700 px-6 py-4">
               <h2 className="text-2xl font-semibold">{taskId ? 'Edit Task' : 'Add Task'}</h2>
               <button onClick={handleClose} className="text-2xl font-bold text-blue-400 hover:text-red-500 cursor-pointer">&times;</button>
@@ -430,8 +465,8 @@ const fetchTasks = async () => {
               </div>
 
               <div>
-                <label className="block text-gray-400 mb-1">Category</label>
-                <select name="category_id" value={formData.category_id} onChange={handleChange} className="w-full bg-[#1a2238] p-2 rounded-lg border border-gray-600 mb-2">
+                <label className="block text-gray-400 mb-1">Project</label>
+                <select name="project_id" value={formData.project_id} onChange={handleChange} className="w-full bg-[#1a2238] p-2 rounded-lg border border-gray-600 mb-2">
                   <option value="">Select Project</option>
                   {projects.map((cat: any) => (
                     <option key={cat.id} value={cat.id}>{cat.name}</option>
@@ -451,7 +486,7 @@ const fetchTasks = async () => {
               
                 <div>
                 <label className="block font-medium text-gray-400 mb-1">Attachments</label>
-                <input type="file" name="attachments" multiple onChange={e => setAttachments(e.target.files)} className="w-full rounded-lg px-3 py-2 border border-gray-600 focus:ring-2 focus:ring-blue-500" style={{ background: '#1a2238' }} />
+                <input type="file" name="attachments" multiple onChange={e => setAttachments(e.target.files)} className="w-full rounded-lg px-3 py-2 border border-gray-600 focus:ring-2 focus:ring-blue-500 cursor-pointer" style={{ background: '#1a2238' }} />
               </div>
 
               <div className="flex justify-center gap-2 pt-4">
@@ -463,6 +498,8 @@ const fetchTasks = async () => {
             </form>
           </div>
         </div>
+
+      </div>
       )}
 
 
@@ -472,25 +509,31 @@ const fetchTasks = async () => {
           className="fixed inset-0 z-50 backdrop-blur-sm flex justify-center items-center"
           onClick={(e) => e.target === e.currentTarget && setDeleteModalOpen(false)}
         >
-          <div className="text-white bg-[#161f30] rounded-xl shadow-2xl w-full max-w-md p-6 animate-fade-in">
-            <h3 className="text-xl font-semibold mb-4">Confirm Deletion</h3>
-            <p className="mb-6">
-              Are you sure you want to delete{' '}
-              <strong>{deleteTarget.title}</strong>?
-            </p>
-            <div className="flex justify-center gap-3">
-              <button
-                className="bg-gray-200 text-gray-700 font-semibold rounded-lg px-4 py-2"
-                onClick={() => setDeleteModalOpen(false)}
-              >
-                Cancel
-              </button>
-              <button
-                className="bg-red-600 hover:bg-red-800 text-white font-semibold rounded-lg px-4 py-2"
-                onClick={handleDelete}
-              >
-                Yes, Delete
-              </button>
+          <div className="text-white bg-[#161f30] rounded-xl shadow-2xl w-full max-w-md animate-fade-in">
+            <div className="flex justify-between items-center mb-4 border-b border-blue-700 px-6 py-4">
+              <h2 className="text-xl font-semibold">Confirm Deletion</h2>
+              <button onClick={() => setDeleteModalOpen(false)} className="text-2xl font-bold text-blue-400 hover:text-red-500 cursor-pointer">&times;</button>
+            </div>
+
+            <div className="p-6">
+              <p className="mb-6">
+                Are you sure you want to delete{' '}
+                <strong>{deleteTarget.title}</strong>?
+              </p>
+              <div className="flex justify-center gap-3">
+                <button
+                  className="bg-gray-200 text-gray-700 font-semibold rounded-lg px-4 py-2"
+                  onClick={() => setDeleteModalOpen(false)}
+                >
+                  Cancel
+                </button>
+                <button
+                  className="bg-red-600 hover:bg-red-800 text-white font-semibold rounded-lg px-4 py-2"
+                  onClick={handleDelete}
+                >
+                  Yes, Delete
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -531,12 +574,6 @@ const formatDate = (dateString: string) => {
   });
 };
 
-const handleEditClick = (id: number) => {
-  const modal = document.getElementById('task-modal') as any;
-  if (modal && modal.setTaskId) {
-    modal.setTaskId(id); // trigger edit state in modal
-  }
-};
 
 
 export default TasksPage;

@@ -85,9 +85,9 @@ class TaskController extends Controller {
 
 
     public function store(Request $request) {
-        if (auth()->user()->role == 'user') {
-            return response()->json(['error' => 'Unauthorized'], 403);
-        }
+        // if (auth()->user()->role == 'user') {
+        //     return response()->json(['error' => 'Unauthorized'], 403);
+        // }
 
         // $request->validate([
         //     'title' => 'required|string|max:255',
@@ -101,12 +101,13 @@ class TaskController extends Controller {
 
         $task = Task::create($request->all());
 
+       
         // Handle multiple file uploads via queue
         if ($request->hasFile('attachments')) {
             foreach ($request->file('attachments') as $file) {
                 $originalName = $file->getClientOriginalName();
                 $path = $file->storeAs('temp', $originalName, 'local');
-                UploadTaskFileJob::dispatch($path, $task->id, auth()->id());
+                UploadTaskFileJob::dispatch($path, $task->id, '1');
             }
         }
 
@@ -119,15 +120,15 @@ class TaskController extends Controller {
         //     return response()->json(['error' => 'Unauthorized'], 403);
         // }
 
-        $request->validate([
-            'title' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'status' => 'required|string|in:Pending,In-Progress,Completed',
-            'priority' => 'required|in:Low,Medium,High',
-            'category_id' => 'nullable|exists:categories,id',
-            'user_id' => 'required|exists:users,id',
-            'due_date' => 'nullable|date'
-        ]);
+        // $request->validate([
+        //     'title' => 'required|string|max:255',
+        //     'description' => 'nullable|string',
+        //     'status' => 'required|string|in:Pending,In-Progress,Completed',
+        //     'priority' => 'required|in:Low,Medium,High',
+        //     'category_id' => 'nullable|exists:categories,id',
+        //     'user_id' => 'required|exists:users,id',
+        //     'due_date' => 'nullable|date'
+        // ]);
 
         $task->update($request->all());
         return response()->json(['success' => 'Task updated successfully.'], 200);
