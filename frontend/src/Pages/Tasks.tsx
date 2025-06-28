@@ -25,7 +25,6 @@ const TasksPage: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [tasks, setTasks] = useState<Task[]>([]);
   const [filteredTasks, setFilteredTasks] = useState<Task[]>([]);
-  const [timelineTasks, setTimelineTasks] = useState<Task[]>([]); // Only set from API, never overwritten by filters
   const [counts, setCounts] = useState({ pending: 0, inProgress: 0, completed: 0 });
   const [search, setSearch] = useState("");
   const [filterPriority, setFilterPriority] = useState("");
@@ -34,6 +33,7 @@ const TasksPage: React.FC = () => {
   const [deleteTarget, setDeleteTarget] = useState<Partial<Task>>({});
   const [showModal, setShowModal] = useState(false);
   const [taskId, setTaskId] = useState<number | null>(null);
+
   const [projects, setprojects] = useState([]);
   const [users, setUsers] = useState([]);
   const [attachments, setAttachments] = useState<FileList | null>(null);
@@ -47,17 +47,10 @@ const TasksPage: React.FC = () => {
     user_id: '',
   });
 
+
   // Fetch tasks and timeline tasks on mount
   useEffect(() => {
     fetchTasks();
-    axios.get<Task[]>('timeline-tasks')
-      .then(res => {
-        // Always keep timelineTasks as returned from API (ascending order)
-        setTimelineTasks(res.data);
-      })
-      .catch(err => {
-        console.error('Failed to load timeline tasks', err);
-      });
   }, []);
 
   // Filter tasks for table/calendar only
@@ -69,20 +62,13 @@ const TasksPage: React.FC = () => {
       return matchSearch && matchPriority && matchStatus;
     });
 
-    // Optionally sort filteredTasks (e.g., by due_date ascending)
-    // filtered.sort((a, b) => {
-    //   if (!a.due_date) return 1;
-    //   if (!b.due_date) return -1;
-    //   return new Date(a.due_date).getTime() - new Date(b.due_date).getTime();
-    // });
-
     setCounts({
       pending: filtered.filter((t) => t.status === "Pending").length,
       inProgress: filtered.filter((t) => t.status === "In-Progress").length,
       completed: filtered.filter((t) => t.status === "Completed").length,
     });
     setFilteredTasks(filtered);
-    // Do NOT update timelineTasks here!
+
   }, [tasks, search, filterPriority, filterStatus]);
 
   
@@ -100,7 +86,8 @@ const TasksPage: React.FC = () => {
   };
 
 
-// Load task data when editing
+
+  // Load task data when editing
   useEffect(() => {
     if (taskId !== null) {
       axios.get<any>(`tasks/${taskId}`).then(res => {
@@ -109,6 +96,7 @@ const TasksPage: React.FC = () => {
       });
     }
   }, [taskId]);
+
 
   const openModal = () => {
     setTaskId(null);
@@ -127,27 +115,19 @@ const TasksPage: React.FC = () => {
     setShowModal(true);
   };
 
+
   const handleClose = () => {
     setShowModal(false);
     setTaskId(null);
   };
 
-  const openEditModal = (task: Task) => {
-    // setFormData({
-    //   title: task.title || '',
-    //   description: task.description || '',
-    //   priority: task.priority || '',
-    //   status: task.status || '',
-    //   due_date: task.due_date || '',
-    //   project_id: (task as any).project_id || '',
-    //   user_id: (task as any).user_id || '',      
-    // });
 
+  const openEditModal = (task: Task) => {
     axios.get<any>('/projects').then(res => setprojects(res.data));
     axios.get<any>('/users').then(res => setUsers(res.data));
     setTaskId(task.id);
-    // setShowModal(true);
   };
+
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -162,7 +142,7 @@ const TasksPage: React.FC = () => {
     // Append files
     if (attachments) {
       Array.from(attachments).forEach((file) => {
-        data.append('attachments[]', file); // assuming you're uploading multiple files
+        data.append('attachments[]', file); 
       });
     }
 
@@ -342,7 +322,7 @@ const TasksPage: React.FC = () => {
                     </div>
                   </td>
                 </tr>
-              ) : tasks.length === 0 ? (
+              ) : filteredTasks.length === 0 ? (
                 <tr>
                   <td colSpan={7} className="text-center py-6 text-gray-500">No task found.</td>
                 </tr>
@@ -383,7 +363,7 @@ const TasksPage: React.FC = () => {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-1 gap-8" style={{ marginTop: '130px' }}>
+      <div className="grid grid-cols-1 xl:grid-cols-2 gap-8" style={{ marginTop: '130px' }}>
         {/* Calendar Section */}
         <div className="mb-4">
           <FullCalendar
@@ -410,19 +390,24 @@ const TasksPage: React.FC = () => {
               };
             })}
             eventClick={(info) => {
-              alert(`Task: ${info.event.title}\nDue Date: ${info.event.start?.toISOString().split('T')[0]}`);
+              // alert(`Task: ${info.event.title}\nDue Date: ${info.event.start?.toISOString().split('T')[0]}`);
             }}
           />
         </div>
 
         {/* Timeline Section */}
-        {/* <div className="sm:mt-0 mt-8">
+        <div className="sm:mt-0 mt-8">
           <h2 className="text-center text-2xl font-bold mb-4">Task Timeline</h2>
           
-          <div className="main-timeline">
-            {timelineTasks.map((task, index) => (
-              <div key={task.id} className={`timeline flex ${index % 2 === 0 ? 'left' : 'right'} mb-6`}>
-                <div className="card">
+          {filteredTasks.length === 0 ? (
+            <div className="text-center text-gray-400 py-10">
+              <p>No tasks available</p>
+            </div>
+          ) : (
+            <div className="main-timeline max-h-[470px] overflow-y-auto px-6 py-10 border border-blue-900 rounded-lg shadow-md bg-gradient-to-br from-[#1a2238] to-[#121829]">
+              {filteredTasks.map((task, index) => (
+                <div key={task.id} className={`timeline ${index % 2 === 0 ? 'left' : 'right'} mb-6`}>
+                  <div className="card rounded-2xl shadow-md hover:shadow-2xl transition-shadow duration-200 bg-[#1a2238] ">
                   <div className="card-body p-6 w-full max-w-md">
                     <h3 className="text-lg font-semibold text-gray-400 mb-2">
                       {task.due_date ? formatDate(task.due_date) : "No due date"}
@@ -435,8 +420,8 @@ const TasksPage: React.FC = () => {
               </div>
             ))}
           </div>
-        
-        </div> */}
+          )}
+        </div>
       </div>
 
 

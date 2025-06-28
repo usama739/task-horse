@@ -26,7 +26,6 @@ Route::delete('/projects/{id}', [ProjectController::class, 'destroy'])->name('pr
 
 Route::get('/tasks/events', [TaskController::class, 'getEvents'])->name('tasks.events');
 Route::get('/tasks', [TaskController::class, 'index'])->name('tasks.index');
-Route::get('/timeline-tasks', [TaskController::class, 'getTimeline'])->name('tasks.timeline');
 Route::post('/tasks', [TaskController::class, 'store'])->name('tasks.store');
 Route::put('/tasks/{task}', [TaskController::class, 'update'])->name('tasks.update');
 Route::delete('/tasks/{task}', [TaskController::class, 'destroy'])->name('tasks.destroy');

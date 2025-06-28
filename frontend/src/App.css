@@ -11,6 +11,9 @@
   display: none;
 } */
 
+.main-timeline::-webkit-scrollbar {
+  display: none; 
+}
 
 #root {
   min-height: 100vh;
@@ -256,7 +259,7 @@ button{
             /* ------------------------------ Timeline Container ---------------------- */
 
 .timeline .card {
-    background: black !important;
+    background: #19223c !important;
     color: white !important;
 }
 
@@ -269,8 +272,8 @@ button{
   .main-timeline::after {
     content: "";
     position: absolute;
-    width: 6px;
-    background-color: #939597;
+    width: 3px;
+    background-color: #2c4a68;
     top: 0;
     bottom: 0;
     left: 50%;
@@ -290,7 +293,7 @@ button{
     position: absolute;
     width: 25px;
     height: 25px;
-    right: -13px;
+    right: -12px;
     background-color: #939597;
     border: 5px solid #f5df4d;
     top: 15px;
@@ -315,7 +318,7 @@ button{
     position: absolute;
     top: 18px;
     z-index: 1;
-    right: 40px;
+    right: 29px;
     border: medium solid black;
     border-width: 10px 0 10px 10px;
     border-color: transparent transparent transparent black;
@@ -363,7 +366,7 @@ button{
     /* Make sure all circles are at the same spot */
     .left::after,
     .right::after {
-      left: 18px;
+      left: -6px;
     }
   
     .left::before {

@@ -6,6 +6,7 @@ import TeamMembers from './Pages/TeamMembers';
 import Tasks from './Pages/Tasks';
 import NotFound from './Pages/NotFound';
 import ViewTask from './Pages/ViewTask';
+import Dashboard from './Pages/Dashboard';
 
 function App() {
   return (
@@ -18,8 +19,7 @@ function App() {
         <Route path="/tasks" element={<Tasks />} />
         <Route path="/tasks" element={<Tasks />} />
         <Route path="/task/:id" element={<ViewTask />} />
-        {/* Uncomment the following line if you have a Dashboard component */}
-        {/* <Route path="/dashboard" element={<Dashboard />} /> */}
+        <Route path="/dashboard" element={<Dashboard />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </Router>
