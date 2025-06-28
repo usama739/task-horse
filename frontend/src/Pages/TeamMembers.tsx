@@ -107,7 +107,7 @@ const TeamMembers: React.FC = () => {
     <>
       <Header isHome={false} />
 
-      <div className="container mx-auto text-white" style={{ paddingTop : '135px' }}>
+      <div className="container mx-auto text-white" style={{ paddingTop : '140px' }}>
         <div className="flex flex-col md:flex-row justify-between items-center mb-6 border-b border-blue-500 pb-4">
           <h2 className="text-3xl font-semibold">Team Members</h2>
           <button
@@ -148,19 +148,21 @@ const TeamMembers: React.FC = () => {
                   <tr key={member.id} className="border-b">
                     <td className="px-6 py-4">{member.name}</td>
                     <td>{member.email}</td>
-                    <td className="py-4">
-                      <button
-                        className="px-4 py-2 text-sm font-medium text-white bg-yellow-500 hover:bg-yellow-600 rounded-s-lg"
-                        onClick={() => openEditModal(member)}
-                      >
-                        Edit
-                      </button>
-                      <button
-                        className="px-4 py-2 text-sm font-medium text-white bg-red-500 hover:bg-red-600 rounded-e-lg"
-                        onClick={() => handleDeleteModal(member)}
-                      >
-                        Delete
-                      </button>
+                    <td>
+                      <div className="inline-flex shadow-sm py-4" role="group">
+                        <button
+                          className="px-4 py-2 text-sm font-medium text-white bg-yellow-500 hover:bg-yellow-600 rounded-s-lg"
+                          onClick={() => openEditModal(member)}
+                        >
+                          Edit
+                        </button>
+                        <button
+                          className="px-4 py-2 text-sm font-medium text-white bg-red-500 hover:bg-red-600 rounded-e-lg"
+                          onClick={() => handleDeleteModal(member)}
+                        >
+                          Delete
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))
@@ -172,10 +174,10 @@ const TeamMembers: React.FC = () => {
         {/* Add/Edit Modal */}
         {modalOpen && (
           <div
-            className="fixed inset-0 z-50 backdrop-blur-sm flex justify-center items-center"
+            className="fixed inset-0 z-50 backdrop-blur-sm flex justify-center items-center px-4 py-10"
             onClick={(e) => e.target === e.currentTarget && handleModalClose()}
           >
-            <div className="text-white bg-[#161f30] rounded-xl shadow-2xl w-full max-w-xl animate-fade-in">
+            <div className="text-white bg-[#161f30] rounded-xl shadow-2xl w-full max-w-xl">
               <div className="flex justify-between items-center rounded-xs border-b border-blue-700 px-6 py-4">
                 <h5 className="text-2xl font-semibold">{isEditMode ? 'Edit Team Member' : 'Add Team Member'}</h5>
                 <button className="text-blue-400 hover:text-red-600 text-2xl font-bold cursor-pointer" onClick={handleModalClose}>&times;</button>
@@ -237,11 +239,11 @@ const TeamMembers: React.FC = () => {
         {/* Delete Confirmation Modal */}
         {deleteModalOpen && (
           <div
-            className="fixed inset-0 z-50 backdrop-blur-sm flex justify-center items-center"
+            className="fixed inset-0 z-50 backdrop-blur-sm flex justify-center items-center px-4 py-10"
             onClick={(e) => e.target === e.currentTarget && setDeleteModalOpen(false)}
           >
 
-            <div className="text-white bg-[#161f30] rounded-xl shadow-2xl w-full max-w-md animate-fade-in">
+            <div className="text-white bg-[#161f30] rounded-xl shadow-2xl w-full max-w-md">
               <div className="flex justify-between items-center rounded-xs border-b border-blue-700 px-6 py-4">
                 <h5 className="text-xl font-semibold">Confirm Deletion</h5>
                 <button className="text-blue-400 hover:text-red-600 text-2xl font-bold cursor-pointer" onClick={() => setDeleteModalOpen(false)}>&times;</button>

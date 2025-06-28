@@ -16,6 +16,7 @@ interface Task {
   status: "Pending" | "In-Progress" | "Completed";
   project?: { name: string };
   due_date?: string;  
+  user?: { name: string };
   assignedTo?: string;
 }
 
@@ -23,18 +24,16 @@ const TasksPage: React.FC = () => {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(true);
   const [tasks, setTasks] = useState<Task[]>([]);
-  const [timelineTasks, setTimelineTasks] = useState<Task[]>([]);
+  const [filteredTasks, setFilteredTasks] = useState<Task[]>([]);
+  const [timelineTasks, setTimelineTasks] = useState<Task[]>([]); // Only set from API, never overwritten by filters
   const [counts, setCounts] = useState({ pending: 0, inProgress: 0, completed: 0 });
   const [search, setSearch] = useState("");
   const [filterPriority, setFilterPriority] = useState("");
   const [filterStatus, setFilterStatus] = useState("");
-
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState<Partial<Task>>({});
-    
   const [showModal, setShowModal] = useState(false);
   const [taskId, setTaskId] = useState<number | null>(null);
-  
   const [projects, setprojects] = useState([]);
   const [users, setUsers] = useState([]);
   const [attachments, setAttachments] = useState<FileList | null>(null);
@@ -48,13 +47,12 @@ const TasksPage: React.FC = () => {
     user_id: '',
   });
 
-  
-
+  // Fetch tasks and timeline tasks on mount
   useEffect(() => {
     fetchTasks();
-    
-    axios.get<any>('timeline-tasks') 
+    axios.get<Task[]>('timeline-tasks')
       .then(res => {
+        // Always keep timelineTasks as returned from API (ascending order)
         setTimelineTasks(res.data);
       })
       .catch(err => {
@@ -62,6 +60,7 @@ const TasksPage: React.FC = () => {
       });
   }, []);
 
+  // Filter tasks for table/calendar only
   useEffect(() => {
     const filtered = tasks.filter((t) => {
       const matchSearch = t.title.toLowerCase().includes(search.toLowerCase());
@@ -70,25 +69,33 @@ const TasksPage: React.FC = () => {
       return matchSearch && matchPriority && matchStatus;
     });
 
+    // Optionally sort filteredTasks (e.g., by due_date ascending)
+    // filtered.sort((a, b) => {
+    //   if (!a.due_date) return 1;
+    //   if (!b.due_date) return -1;
+    //   return new Date(a.due_date).getTime() - new Date(b.due_date).getTime();
+    // });
+
     setCounts({
       pending: filtered.filter((t) => t.status === "Pending").length,
       inProgress: filtered.filter((t) => t.status === "In-Progress").length,
       completed: filtered.filter((t) => t.status === "Completed").length,
     });
+    setFilteredTasks(filtered);
+    // Do NOT update timelineTasks here!
   }, [tasks, search, filterPriority, filterStatus]);
 
   
-const fetchTasks = async () => {
-  setIsLoading(true);
-  try {
-    const res = await axios.get<Task[]>("/tasks");
-    console.log('Fetched tasks:', res.data);
-    setTasks(res.data);
-  } catch (error) {
-    console.error('Error fetching tasks:', error);
-  } finally {
-    setIsLoading(false);
-  }
+  const fetchTasks = async () => {
+    setIsLoading(true);
+    try {
+      const res = await axios.get<Task[]>("/tasks");
+      setTasks(res.data);
+    } catch (error) {
+      console.error('Error fetching tasks:', error);
+    } finally {
+      setIsLoading(false);
+    }
    
   };
 
@@ -126,17 +133,20 @@ const fetchTasks = async () => {
   };
 
   const openEditModal = (task: Task) => {
-    setFormData({
-      title: task.title || '',
-      description: task.description || '',
-      priority: task.priority || '',
-      status: task.status || '',
-      due_date: task.due_date || '',
-      project_id: (task as any).project_id || '',
-      user_id: (task as any).user_id || '',      
-    });
+    // setFormData({
+    //   title: task.title || '',
+    //   description: task.description || '',
+    //   priority: task.priority || '',
+    //   status: task.status || '',
+    //   due_date: task.due_date || '',
+    //   project_id: (task as any).project_id || '',
+    //   user_id: (task as any).user_id || '',      
+    // });
+
+    axios.get<any>('/projects').then(res => setprojects(res.data));
+    axios.get<any>('/users').then(res => setUsers(res.data));
     setTaskId(task.id);
-    setShowModal(true);
+    // setShowModal(true);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -157,8 +167,9 @@ const fetchTasks = async () => {
     }
 
     if (taskId) {
+      data.append('_method', 'PUT'); 
       try {
-        await axios.put(`tasks/${taskId}`, data, {
+        await axios.post(`/tasks/${taskId}`, data, {
           headers: { 'Content-Type': 'multipart/form-data' },
         });
       } catch (error: any) {
@@ -229,9 +240,9 @@ const fetchTasks = async () => {
     <>
     <Header isHome={false} />
 
-    <div className="container mx-auto px-4 py-8 text-white" style={{ paddingTop : '135px' }}>
+    <div className="container mx-auto px-4 py-8 text-white" style={{ paddingTop : '130px' }}>
       {/* Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6" style={{ marginBottom: '130px' }}>
         <div className="card border-l-4 border-yellow-600 bg-[#161f30] shadow-md rounded-lg p-6 flex flex-col items-center">
           <h5 className="flex items-center gap-2 text-yellow-300 font-medium mb-2">
             <i className="fas fa-hourglass-half text-yellow-400 fa-2x" /> Pending
@@ -253,7 +264,7 @@ const fetchTasks = async () => {
       </div>
 
 
-      <div className="shadow rounded-lg p-3 mt-24">
+      <div className="shadow rounded-lg">
         <div className="flex flex-col md:flex-row md:justify-between md:items-center mb-6 border-b border-blue-500 pb-4">
           <h4 className="text-3xl font-semibold mb-4 md:mb-0 text-white">Tasks</h4>
 
@@ -314,7 +325,7 @@ const fetchTasks = async () => {
                 <th className="px-6 py-3">Project</th>
                 <th className="px-6 py-3">Due Date</th>
                 {/* {currentUserRole !== 'user' && */}
-                {/* <th className="px-6 py-3">Assigned To</th> */}
+                <th className="px-6 py-3">Assigned To</th>
                 {/* } */}
                 <th className="px-6 py-3">Actions</th>
               </tr>
@@ -336,7 +347,7 @@ const fetchTasks = async () => {
                   <td colSpan={7} className="text-center py-6 text-gray-500">No task found.</td>
                 </tr>
               ) : (
-                tasks.map(task => (
+                filteredTasks.map(task => (
                   <tr key={task.id} className="border-b">
                     <td className="px-6 py-4">{task.title}</td>
                     <td>
@@ -352,7 +363,7 @@ const fetchTasks = async () => {
                     <td>{task.project?.name || 'No Project'}</td>
                     <td>{task.due_date ? formatDate(task.due_date) : 'No Due Date'}</td>
                     {/* /{currentUserRole !== 'user' &&   */}
-                        {/* <td>{task.assignedTo}</td> */}
+                        <td>{task.user?.name}</td>
                     {/* } */}
                     <td>
                       <div className="inline-flex overflow-hidden shadow-sm py-6" role="group">
@@ -372,7 +383,7 @@ const fetchTasks = async () => {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-16">
+      <div className="grid grid-cols-1 md:grid-cols-1 gap-8" style={{ marginTop: '130px' }}>
         {/* Calendar Section */}
         <div className="mb-4">
           <FullCalendar
@@ -383,11 +394,21 @@ const fetchTasks = async () => {
               center: 'title',
               right: 'dayGridMonth,listWeek'
             }}
-            events={(fetchInfo, successCallback, failureCallback) => {
-              axios.get('tasks/events')
-                .then(response => successCallback(response.data as any[]))
-                .catch(err => failureCallback(err));
-            }}
+            events={filteredTasks.map((task) => {
+              const priorityClass =
+                task.priority === 'High'
+                  ? 'fc-event-high'
+                  : task.priority === 'Medium'
+                  ? 'fc-event-medium'
+                  : 'fc-event-low';
+
+              return {
+                title: task.title,
+                start: task.due_date, // make sure this is in ISO format
+                classNames: [priorityClass],
+                id: String(task.id),
+              };
+            })}
             eventClick={(info) => {
               alert(`Task: ${info.event.title}\nDue Date: ${info.event.start?.toISOString().split('T')[0]}`);
             }}
@@ -395,15 +416,16 @@ const fetchTasks = async () => {
         </div>
 
         {/* Timeline Section */}
-        <div>
+        {/* <div className="sm:mt-0 mt-8">
           <h2 className="text-center text-2xl font-bold mb-4">Task Timeline</h2>
+          
           <div className="main-timeline">
             {timelineTasks.map((task, index) => (
               <div key={task.id} className={`timeline flex ${index % 2 === 0 ? 'left' : 'right'} mb-6`}>
                 <div className="card">
                   <div className="card-body p-6 w-full max-w-md">
                     <h3 className="text-lg font-semibold text-gray-400 mb-2">
-                      {/* {new Date(task.due_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })} */}
+                      {task.due_date ? formatDate(task.due_date) : "No due date"}
                     </h3>
                     <div className="text-xl font-bold text-gray-100 mb-1">{task.title}</div>
                     <div className="text-gray-400 text-sm mb-2">{task.assignedTo}</div>
@@ -413,7 +435,8 @@ const fetchTasks = async () => {
               </div>
             ))}
           </div>
-        </div>
+        
+        </div> */}
       </div>
 
 
@@ -476,7 +499,7 @@ const fetchTasks = async () => {
 
               <div>
                 <label className="block text-gray-400 mb-1">Assign To</label>
-                <select name="user_id" value={formData.user_id} onChange={handleChange} className="w-full bg-[#1a2238] p-2 rounded-lg border border-gray-600 mb-2">
+                <select name="user_id" value={formData.user_id} onChange={handleChange} className="w-full bg-[#1a2238] p-2 rounded-lg border border-gray-600 mb-2" required>
                   <option value="">Select User</option>
                   {users.map((user: any) => (
                     <option key={user.id} value={user.id}>{user.name}</option>
