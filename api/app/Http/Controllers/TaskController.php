@@ -69,21 +69,6 @@ class TaskController extends Controller {
 
 
 
-    
-    
-    public function getTimeline() {
-        // if (auth()->user()->can('user')) {
-        //     $tasks = Task::where('user_id', auth()->id())->orderBy('due_date', 'desc')->get();
-        // } else {
-        //     $tasks = Task::orderBy('due_date', 'desc')->get();
-        // }
-
-        $timelineTasks = Task::orderBy('due_date', 'asc')->get();
-
-        return response()->json($timelineTasks, 200);
-    }
-
-
     public function store(Request $request) {
         // if (auth()->user()->role == 'user') {
         //     return response()->json(['error' => 'Unauthorized'], 403);
@@ -99,9 +84,7 @@ class TaskController extends Controller {
         //     'due_date' => 'nullable|date',
         // ]);
 
-        
         $task = Task::create($request->all());
-        
        
         // Handle multiple file uploads via queue
         if ($request->hasFile('attachments')) {
