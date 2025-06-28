@@ -78,12 +78,12 @@ const TaskDetail: React.FC = () => {
         <Header isHome={false} />
     
         {!task ? (
-            <div className="flex justify-center items-center py-8"  style={{ paddingTop : '135px' }}>
+            <div className="flex justify-center items-center py-8"  style={{ paddingTop : '140px' }}>
                 <div className="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
                 <span className="ml-2 text-gray-500">Loading...</span>
             </div>  
         ) : (
-            <div className="container mx-auto max-w-4xl text-white" style={{ paddingTop : '135px' }}>
+            <div className="container mx-auto max-w-4xl text-white" style={{ paddingTop : '140px' }}>
             <div className="flex items-center mb-6">
                 <Link to="/tasks" className="flex items-center text-blue-400 hover:text-blue-600 text-lg font-semibold">
                 <i className="fas fa-arrow-left mr-2"></i> <span>Back to Tasks</span>

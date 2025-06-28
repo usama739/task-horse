@@ -111,7 +111,7 @@ function Projects() {
     <Header isHome={false} />
 
 
-    <div className="container mx-auto" style={{ paddingTop : '135px' }}>
+    <div className="container mx-auto" style={{ paddingTop : '140px' }}>
       <div className="flex flex-col md:flex-row md:justify-between md:items-center mb-6 border-b dark:border-blue-500 pb-4">
         <h4 className="text-3xl font-semibold mb-4 md:mb-0 text-white">Projects</h4>
         <button
@@ -152,7 +152,7 @@ function Projects() {
               <tr key={project.id} className="border-b">
                 <td className="px-6 py-4">{project.name}</td>
                 <td>
-                  <div className="inline-flex shadow-sm py-4">
+                  <div className="inline-flex shadow-sm py-4" role="group">
                     <button
                       className="px-4 py-2 text-sm font-medium text-white bg-yellow-500 hover:bg-yellow-600 rounded-s-lg"
                       onClick={() => openEditProjectModal(project)}
@@ -177,7 +177,7 @@ function Projects() {
 
       {/* Add/Edit Project Modal */}
       {showFormModal && (
-        <div className="fixed inset-0 z-50 backdrop-blur-sm flex justify-center items-center">
+        <div className="fixed inset-0 z-50 backdrop-blur-sm flex justify-center items-center px-4 py-10">
           <div className="text-white bg-[#161f30] rounded-xl shadow-2xl w-full max-w-xl">
             <div className="flex justify-between items-center rounded-xs border-b border-blue-700 px-6 py-4">
               <h5 className="text-2xl font-semibold">{projectForm.id ? "Edit Project" : "Add Project"}</h5>
@@ -217,7 +217,7 @@ function Projects() {
 
       {/* Delete Confirmation Modal */}
       {showDeleteModal && (
-        <div className="fixed inset-0 z-50 backdrop-blur-sm flex justify-center items-center">
+        <div className="fixed inset-0 z-50 backdrop-blur-sm flex justify-center items-center px-4 py-10">
           <div className="text-white rounded-xl shadow-2xl w-full max-w-md" style={{ background: "#161f30" }}>
             <div className="flex justify-between border-b border-blue-700 px-6 py-4">
               <h5 className="text-xl font-semibold">Confirm Deletion</h5>

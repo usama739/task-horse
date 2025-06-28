@@ -34,8 +34,8 @@ class TaskController extends Controller {
     }
 
     public function index() {
-        $tasks = Task::orderBy('created_at', 'desc')->get();
-        // dd($tasks);
+        //get all tasks with project and uer name
+        $tasks = Task::with(['project', 'user'])->orderBy('due_date', 'asc')->get();
         return response()->json($tasks);
     }
 
@@ -78,7 +78,7 @@ class TaskController extends Controller {
         //     $tasks = Task::orderBy('due_date', 'desc')->get();
         // }
 
-        $timelineTasks = Task::orderBy('due_date', 'desc')->get();
+        $timelineTasks = Task::orderBy('due_date', 'asc')->get();
 
         return response()->json($timelineTasks, 200);
     }
@@ -99,8 +99,9 @@ class TaskController extends Controller {
         //     'due_date' => 'nullable|date',
         // ]);
 
+        
         $task = Task::create($request->all());
-
+        
        
         // Handle multiple file uploads via queue
         if ($request->hasFile('attachments')) {
@@ -148,7 +149,7 @@ class TaskController extends Controller {
 
 
     public function show($id) {
-        $task = Task::with('comments.user')->findOrFail($id);
+        $task = Task::with('comments.user')->findOrFail($id);           // there is also relaton between comments ans user
         return response()->json($task);
         // return view('tasks.show', compact('task'));
     }
