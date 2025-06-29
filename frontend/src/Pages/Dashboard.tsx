@@ -1,5 +1,9 @@
 import React from 'react';
 import Header from '../Components/Header';
+import LineChart from '../Components/LineChart';
+import TasksByUserChart from '../Components/TasksByUserChart';
+import PriorityPieChart from '../Components/PriorityPieChart';
+import ProjectDonutChart from '../Components/ProjectDonutChart';
 
 const Dashboard: React.FC = () => {
   return (
@@ -21,12 +25,6 @@ const Dashboard: React.FC = () => {
             <option>In Progress</option>
             <option>Completed</option>
           </select>
-          <input
-            type="text"
-            placeholder="Search..."
-            className="border border-blue-700 text-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            style={{ background: '#161f30' }}
-          />
         </div>
       </div>
 
@@ -44,15 +42,30 @@ const Dashboard: React.FC = () => {
         ))}
       </div>
 
-      {/* Charts Placeholder */}
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 mb-8">
-        {['taskStatusLineChart', 'userBarChart', 'priorityPieChart', 'projectDonutChart'].map((id, i) => (
-          <div key={i} className="rounded-xl p-6 shadow flex flex-col" style={{ background: '#161f30' }}>
-            <h2 className="text-xl font-semibold text-white mb-4">Chart: {id}</h2>
-            <canvas id={id} height={120}></canvas>
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+        {/* line chart */}
+        <div className="rounded-xl p-6 shadow flex flex-col" style={{ background: '#161f30' }}>
+            <h2 className="text-xl font-semibold text-white mb-4">Task Volume by Status (Last 30 Days)</h2>
+            <LineChart />
           </div>
-        ))}
+
+          <div className="rounded-xl p-6 shadow flex flex-col" style={{ background: '#161f30' }}>
+            <h2 className="text-xl font-semibold text-white mb-4">Tasks Completed Per User</h2>
+            <TasksByUserChart />
+          </div>
+
+          <div className="rounded-xl p-6 shadow flex flex-col" style={{ background: '#161f30' }}>
+            <h2 className="text-xl font-semibold text-white mb-4">Current Tasks by Priority</h2>
+            <PriorityPieChart />
+          </div>
+
+          <div className="rounded-xl p-6 shadow flex flex-col" style={{ background: '#161f30' }}>
+            <h2 className="text-xl font-semibold text-white mb-4">Tasks by Project</h2>
+            <ProjectDonutChart />
+          </div>
       </div>
+
 
       {/* Timeline & Activity */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
