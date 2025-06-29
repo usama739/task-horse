@@ -268,23 +268,21 @@ const TasksPage: React.FC = () => {
             <select
               value={filterPriority}
               onChange={e => setFilterPriority(e.target.value)}
-              className="p-2 text-sm rounded-lg bg-gray-700 text-white px-3 cursor-pointer"
-            >
-              <option value="">All Priorities</option>
-              <option value="Low">Low</option>
-              <option value="Medium">Medium</option>
-              <option value="High">High</option>
+              className="border border-blue-700 text-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer" style={{ background: 'rgb(22, 31, 48)' }}>
+                <option value="">All Priorities</option>
+                <option value="Low">Low</option>
+                <option value="Medium">Medium</option>
+                <option value="High">High</option>
             </select>
 
             <select
               value={filterStatus}
               onChange={e => setFilterStatus(e.target.value)}
-              className="p-2 text-sm rounded-lg bg-gray-700 text-white px-3 cursor-pointer"
-            >
-              <option value="">All Statuses</option>
-              <option value="Pending">Pending</option>
-              <option value="In-Progress">In-Progress</option>
-              <option value="Completed">Completed</option>
+              className="border border-blue-700 text-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer" style={{ background: 'rgb(22, 31, 48)' }}>
+                <option value="">All Statuses</option>
+                <option value="Pending">Pending</option>
+                <option value="In-Progress">In-Progress</option>
+                <option value="Completed">Completed</option>
             </select>
 
             {/* {currentUserRole !== 'user' && ( */}
