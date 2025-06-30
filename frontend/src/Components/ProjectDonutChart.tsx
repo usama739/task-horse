@@ -2,17 +2,32 @@ import { useEffect, useState } from 'react';
 import { Chart as ChartJS, DoughnutController, ArcElement, Tooltip, Legend } from 'chart.js';
 import { Doughnut } from 'react-chartjs-2';
 import axios from '../axios'; // adjust path if needed
+import dayjs from 'dayjs';
 
 ChartJS.register(DoughnutController, ArcElement, Tooltip, Legend);
 
-const ProjectDonutChart = () => {
+interface DonutChartProps {
+  startDate?: Date;
+  endDate?: Date;
+  projectId?: string;
+  status?: string;
+}
+
+const ProjectDonutChart: React.FC<DonutChartProps> = ({ startDate, endDate, projectId, status }) => {
   const [data, setData] = useState<{ project: string; count: number }[]>([]);
 
   useEffect(() => {
-    axios.get<any>('/dashboard/tasks-by-project').then((res) => {
+    axios.get<any>('/dashboard/tasks-by-project', {
+      params: {
+        start_date: startDate ? dayjs(startDate).format("YYYY-MM-DD") : undefined,
+        end_date: endDate ? dayjs(endDate).format("YYYY-MM-DD") : undefined,
+        project_id: projectId,
+        status: status,
+      }
+    }).then((res) => {
       setData(res.data);
     });
-  }, []);
+  }, [startDate, endDate, projectId, status]);
 
   const chartData = {
     labels: data.map((item) => item.project),

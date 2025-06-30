@@ -1,22 +1,32 @@
 import { useEffect, useState } from 'react';
 import { Bar } from 'react-chartjs-2';
-import axios from '../axios'; // adjust the path as needed
-import {
-  Chart as ChartJS,
-  BarElement,
-  CategoryScale,
-  LinearScale,
-  Tooltip,
-  Legend
-} from 'chart.js';
+import axios from '../axios'; 
+import dayjs from 'dayjs';
+import { Chart as ChartJS, BarElement, CategoryScale, LinearScale, Tooltip, Legend } from 'chart.js';
 
 ChartJS.register(BarElement, CategoryScale, LinearScale, Tooltip, Legend);
 
-const TasksByUserChart = () => {
+interface UserChartProps {
+  startDate?: Date;
+  endDate?: Date;
+  projectId?: string;
+  status?: string;
+}
+
+const TasksByUserChart: React.FC<UserChartProps> = ({ startDate, endDate, projectId, status }) => {
   const [chartData, setChartData] = useState<any>(null);
 
   useEffect(() => {
-    axios.get<any>('/dashboard/completed-tasks-by-user').then(res => {
+    axios.get<any>('/dashboard/completed-tasks-by-user'
+        , {
+            params: {
+            start_date: startDate ? dayjs(startDate).format("YYYY-MM-DD") : undefined,
+            end_date: endDate ? dayjs(endDate).format("YYYY-MM-DD") : undefined,
+            project_id: projectId,
+            status: status,
+            }
+        }
+    ).then(res => {
       const users = res.data;
       const labels = users.map((u: any) => u.name);
       const data = users.map((u: any) => u.completed_tasks_count);
@@ -33,7 +43,7 @@ const TasksByUserChart = () => {
         ]
       });
     });
-  }, []);
+  }, [startDate, endDate, projectId, status]);
 
 
   return (

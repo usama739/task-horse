@@ -17,6 +17,9 @@ Route::get('/dashboard/task-status-trend', [DashboardController::class, 'taskSta
 Route::get('/dashboard/completed-tasks-by-user', [DashboardController::class, 'completedTasksByUser']);
 Route::get('/dashboard/tasks-by-priority', [DashboardController::class, 'tasksByPriority']);
 Route::get('/dashboard/tasks-by-project', [DashboardController::class, 'tasksByProject']);
+Route::get('/dashboard/task-priority-counts', [DashboardController::class, 'taskPriorityCounts']);
+Route::get('/dashboard/overview-counts', [DashboardController::class, 'overviewCounts']);
+
 
 Route::get('/users', [UserController::class, 'index'])->name('users.index');
 Route::post('/users', [UserController::class, 'store'])->name('users.store');
