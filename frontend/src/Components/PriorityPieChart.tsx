@@ -2,17 +2,32 @@ import { useEffect, useState } from 'react';
 import { Chart as ChartJS, PieController, ArcElement, Tooltip, Legend } from 'chart.js';
 import { Pie } from 'react-chartjs-2';
 import axios from '../axios'; 
+import dayjs from 'dayjs';
 
 ChartJS.register(PieController, ArcElement, Tooltip, Legend);
 
-const PriorityPieChart = () => {
+interface PieChartProps {
+  startDate?: Date;
+  endDate?: Date;
+  projectId?: string;
+  status?: string;
+}
+
+const PriorityPieChart: React.FC<PieChartProps> = ({ startDate, endDate, projectId, status }) => {
   const [priorityData, setPriorityData] = useState<{ priority: string; count: number }[]>([]);
 
   useEffect(() => {
-    axios.get<any>('/dashboard/tasks-by-priority').then((res) => {
+    axios.get<any>('/dashboard/tasks-by-priority', {
+      params: {
+        start_date: startDate ? dayjs(startDate).format("YYYY-MM-DD") : undefined,
+        end_date: endDate ? dayjs(endDate).format("YYYY-MM-DD") : undefined,
+        project_id: projectId,
+        status: status,
+      }
+    }).then((res) => {
       setPriorityData(res.data);
     });
-  }, []);
+  }, [startDate, endDate, projectId, status]);
 
   const chartData = {
     labels: priorityData.map((item) => item.priority),

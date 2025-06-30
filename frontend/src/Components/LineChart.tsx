@@ -11,15 +11,33 @@ import {
   Tooltip,
   Legend,
 } from 'chart.js';
+import dayjs from 'dayjs';
 
 ChartJS.register(LineElement, PointElement, CategoryScale, LinearScale, Title, Tooltip, Legend);
 
-const LineChart: React.FC = () => {
+interface LineChartProps {
+  startDate?: Date;
+  endDate?: Date;
+  projectId?: string;
+  status?: string;
+}
+
+const LineChart: React.FC<LineChartProps> = ({ startDate, endDate, projectId, status }) => {
   const [chartData, setChartData] = useState<any>(null);
 
   useEffect(() => {
+    console.log('Fetching data for LineChart', { startDate, endDate, projectId, status });
     const fetchData = async () => {
-      const res = await axios.get('/dashboard/task-status-trend');
+      const res = await axios.get('/dashboard/task-status-trend'
+        , {
+          params: {
+            start_date: startDate ? dayjs(startDate).format("YYYY-MM-DD") : undefined,
+            end_date: endDate ? dayjs(endDate).format("YYYY-MM-DD") : undefined,
+            project_id: projectId,
+            status: status,
+          }
+        }
+      );
       const data = res.data as Record<string, { Created: number; 'In-Progress': number; Completed: number }>;
 
       const labels = Object.keys(data); // Last 30 days
@@ -60,7 +78,7 @@ const LineChart: React.FC = () => {
     };
 
     fetchData();
-  }, []);
+  }, [startDate, endDate, projectId, status]);
 
   const options = {
     responsive: true,
