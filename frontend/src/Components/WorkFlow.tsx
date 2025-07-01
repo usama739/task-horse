@@ -1,10 +1,15 @@
 import React from 'react'
+import { motion } from 'framer-motion'
 
 function WorkFlow() {
   return (
     <>
     <section className="py-24" style={{ background: '#0e1525' }}>
-      <div className="container mx-auto px-6">
+      <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 1, duration: 0.8 }}  
+          className="container mx-auto px-6">
         <h2 className="text-3xl md:text-4xl font-bold text-center text-white">How It Works</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-12 mt-10">
           {[
@@ -21,7 +26,7 @@ function WorkFlow() {
             </div>
           ))}
         </div>
-      </div>
+      </motion.div>
     </section>
     </>
   )

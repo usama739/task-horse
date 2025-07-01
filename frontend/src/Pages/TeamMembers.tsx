@@ -2,7 +2,7 @@ import React, { useEffect, useState, type FormEvent } from 'react';
 import Header from '../Components/Header';
 import axios from '../axios'; 
 import Swal from 'sweetalert2';
-
+import { motion } from 'framer-motion';
 interface TeamMember {
   id: number;
   name: string;
@@ -107,8 +107,12 @@ const TeamMembers: React.FC = () => {
     <>
       <Header isHome={false} />
 
-      <div className="container mx-auto text-white" style={{ paddingTop : '140px' }}>
-        <div className="flex flex-col md:flex-row justify-between items-center mb-6 border-b border-blue-500 pb-4">
+      <div className="container mx-auto text-white px-6 py-8" style={{ paddingTop : '140px' }}>
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0 }}   
+          className="flex flex-col md:flex-row justify-between items-center mb-6 border-b dark:border-blue-500 pb-4">
           <h2 className="text-3xl font-semibold">Team Members</h2>
           <button
             className="bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg px-4 py-2 mt-4 md:mt-0 cursor-pointer"
@@ -116,9 +120,13 @@ const TeamMembers: React.FC = () => {
           >
             Add Team Member
           </button>
-        </div>
+        </motion.div>
 
-        <div className="relative overflow-x-auto rounded-lg shadow">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}   
+          className="relative overflow-x-auto rounded-lg shadow">
           <table className="w-full text-sm text-center text-gray-300">
             <thead className="text-xs uppercase bg-gray-900 text-gray-400">
               <tr>
@@ -149,7 +157,7 @@ const TeamMembers: React.FC = () => {
                     <td className="px-6 py-4">{member.name}</td>
                     <td>{member.email}</td>
                     <td>
-                      <div className="inline-flex shadow-sm py-4" role="group">
+                      <div className="inline-flex shadow-sm py-4 px-3" role="group">
                         <button
                           className="px-4 py-2 text-sm font-medium text-white bg-yellow-500 hover:bg-yellow-600 rounded-s-lg"
                           onClick={() => openEditModal(member)}
@@ -169,7 +177,7 @@ const TeamMembers: React.FC = () => {
               )}                
             </tbody>
           </table>
-        </div>
+        </motion.div>
 
         {/* Add/Edit Modal */}
         {modalOpen && (

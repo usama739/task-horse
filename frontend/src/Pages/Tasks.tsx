@@ -7,7 +7,8 @@ import listPlugin from '@fullcalendar/list';
 import interactionPlugin from '@fullcalendar/interaction';
 import Swal from 'sweetalert2'
 import { useNavigate } from "react-router-dom";
-
+import { motion } from "framer-motion";
+import CountUp from "react-countup";
 interface Task {
   id: number;
   title: string;
@@ -220,32 +221,46 @@ const TasksPage: React.FC = () => {
     <>
     <Header isHome={false} />
 
-    <div className="container mx-auto px-4 py-8 text-white" style={{ paddingTop : '130px' }}>
+    <div className="container mx-auto px-6 py-8 text-white" style={{ paddingTop : '130px' }}>
       {/* Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6" style={{ marginBottom: '130px' }}>
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0 }} 
+        className="grid grid-cols-1 md:grid-cols-3 gap-6" style={{ marginBottom: '130px' }}>
         <div className="card border-l-4 border-yellow-600 bg-[#161f30] shadow-md rounded-lg p-6 flex flex-col items-center">
           <h5 className="flex items-center gap-2 text-yellow-300 font-medium mb-2">
             <i className="fas fa-hourglass-half text-yellow-400 fa-2x" /> Pending
           </h5>
-          <h3 className="text-3xl font-bold">{counts.pending}</h3>
+          <h3 className="text-3xl font-bold">
+            <CountUp end={counts.pending} duration={1.5} />
+          </h3>
         </div>
         <div className="card border-l-4 border-blue-600 shadow-md bg-[#161f30] rounded-lg p-6 flex flex-col items-center">
           <h5 className="flex items-center gap-2 text-blue-300 font-medium">
             <i className="fas fa-spinner text-blue-400 fa-2x" /> In-Progress
           </h5>
-          <h3 className="text-3xl font-bold">{counts.inProgress}</h3>
+          <h3 className="text-3xl font-bold">
+            <CountUp end={counts.inProgress} duration={1.5} />
+          </h3>
         </div>
         <div className="card border-l-4 border-green-600 bg-[#161f30] shadow-md rounded-lg p-6 flex flex-col items-center">
           <h5 className="flex items-center gap-2 text-green-300 font-medium">
             <i className="fas fa-check-circle text-green-400 fa-2x" /> Completed
           </h5>
-          <h3 className="text-3xl font-bold">{counts.completed}</h3>
+          <h3 className="text-3xl font-bold">
+            <CountUp end={counts.completed} duration={1.5} />
+          </h3>
         </div>
-      </div>
+      </motion.div>
 
 
       <div className="shadow rounded-lg">
-        <div className="flex flex-col md:flex-row md:justify-between md:items-center mb-6 border-b border-blue-500 pb-4">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}  
+          className="flex flex-col md:flex-row md:justify-between md:items-center mb-6 border-b border-blue-500 pb-4">
           <h4 className="text-3xl font-semibold mb-4 md:mb-0 text-white">Tasks</h4>
 
           <div className="flex flex-col md:flex-row gap-2 w-full md:w-auto">
@@ -291,9 +306,13 @@ const TasksPage: React.FC = () => {
               </button>
             {/* )} */}
           </div>
-        </div>
+        </motion.div>
 
-        <div className="overflow-x-auto rounded-lg shadow">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.4 }}  
+          className="overflow-x-auto rounded-lg shadow">
           <table className="w-full text-sm text-center text-gray-300">
             <thead className="text-xs uppercase bg-gray-900 text-gray-400">
               <tr>
@@ -358,10 +377,14 @@ const TasksPage: React.FC = () => {
 
             </tbody>
           </table>
-        </div>
+        </motion.div>
       </div>
 
-      <div className="grid grid-cols-1 xl:grid-cols-2 gap-8" style={{ marginTop: '130px' }}>
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.6 }}  
+        className="grid grid-cols-1 xl:grid-cols-2 gap-8" style={{ marginTop: '130px' }}>
         {/* Calendar Section */}
         <div className="mb-4">
           <FullCalendar
@@ -420,7 +443,7 @@ const TasksPage: React.FC = () => {
           </div>
           )}
         </div>
-      </div>
+      </motion.div>
 
 
       {showModal && (
@@ -512,7 +535,7 @@ const TasksPage: React.FC = () => {
       {/* Delete Confirmation Modal */}
       {deleteModalOpen && (
         <div
-          className="fixed inset-0 z-50 backdrop-blur-sm flex justify-center items-center"
+          className="fixed inset-0 z-50 backdrop-blur-sm flex justify-center items-center px-4 py-10"
           onClick={(e) => e.target === e.currentTarget && setDeleteModalOpen(false)}
         >
           <div className="text-white bg-[#161f30] rounded-xl shadow-2xl w-full max-w-md animate-fade-in">

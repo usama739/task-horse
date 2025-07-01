@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from '../axios'; 
 import { useParams, Link } from 'react-router-dom';
 import Header from '../Components/Header';
+import { motion } from 'framer-motion';
 interface User {
   id: number;
   name: string;
@@ -83,48 +84,60 @@ const TaskDetail: React.FC = () => {
                 <span className="ml-2 text-gray-500">Loading...</span>
             </div>  
         ) : (
-            <div className="container mx-auto max-w-4xl text-white" style={{ paddingTop : '140px' }}>
-            <div className="flex items-center mb-6">
+            <div className="container mx-auto max-w-4xl px-6 py-8 text-white" style={{ paddingTop : '140px' }}>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0 }}   
+              className="flex items-center mb-6">
                 <Link to="/tasks" className="flex items-center text-blue-400 hover:text-blue-600 text-lg font-semibold">
                 <i className="fas fa-arrow-left mr-2"></i> <span>Back to Tasks</span>
                 </Link>
-            </div>
+            </motion.div>
 
-            <div className="rounded-lg shadow-md p-8 mb-8" style={{ background: '#161f30' }}>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}   
+              className="rounded-lg shadow-md p-8 mb-8" style={{ background: '#161f30' }}>
                 <h2 className="text-3xl font-bold mb-5">{task.title}</h2>
                 <div className="mb-5">
                 <span className="block text-gray-400 font-medium mb-1">Description:</span>
                 <p className="text-gray-200">{task.description}</p>
                 </div>
 
-                <div className="flex flex-wrap gap-8 mb-3">
-                <div>
-                    <span className="block text-gray-400 font-medium mb-1">Priority:</span>
-                    <span className={`inline-block rounded px-2 py-1 text-xs font-semibold bg-opacity-20 text-white bg-${getPriorityColor(task.priority)}-500`}>
-                    {task.priority}
-                    </span>
-                </div>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-3">
+                  <div>
+                      <span className="block text-gray-400 font-medium mb-1">Priority:</span>
+                      <span className={`inline-block rounded px-2 py-1 text-xs font-semibold bg-opacity-20 text-white bg-${getPriorityColor(task.priority)}-500`}>
+                      {task.priority}
+                      </span>
+                  </div>
 
-                <div>
-                    <span className="block text-gray-400 font-medium mb-1">Status:</span>
-                    <span className={`inline-block rounded px-2 py-1 text-xs font-semibold bg-opacity-20 text-white bg-${getStatusColor(task.status)}-500`}>
-                    {task.status}
-                    </span>
-                </div>
+                  <div>
+                      <span className="block text-gray-400 font-medium mb-1">Status:</span>
+                      <span className={`inline-block rounded px-2 py-1 text-xs font-semibold bg-opacity-20 text-white bg-${getStatusColor(task.status)}-500`}>
+                      {task.status}
+                      </span>
+                  </div>
 
-                <div>
-                    <span className="block text-gray-400 font-medium mb-1">Due Date:</span>
-                    <span className="text-gray-200">{task.due_date ?? 'No due date'}</span>
-                </div>
+                  <div>
+                      <span className="block text-gray-400 font-medium mb-1">Due Date:</span>
+                      <span className="text-gray-200">{task.due_date ?? 'No due date'}</span>
+                  </div>
 
-                <div>
-                    <span className="block text-gray-400 font-medium mb-1">Assigned To:</span>
-                    <span className="text-gray-200">{task.user?.name ?? 'Unassigned'}</span>
+                  <div>
+                      <span className="block text-gray-400 font-medium mb-1">Assigned To:</span>
+                      <span className="text-gray-200">{task.user?.name ?? 'Unassigned'}</span>
+                  </div>
                 </div>
-                </div>
-            </div>
+            </motion.div>
 
-            <div className="rounded-lg shadow-md p-6 mb-8" style={{ background: '#161f30' }}>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.4 }}   
+              className="rounded-lg shadow-md p-6 mb-8" style={{ background: '#161f30' }}>
                 <h3 className="text-2xl font-bold mb-4">Comments</h3>
                 {task.comments.map((comment) => (
                 <div key={comment.id} className="flex justify-between items-center border-b border-gray-700 py-4 px-2 relative">
@@ -155,9 +168,13 @@ const TaskDetail: React.FC = () => {
                     )}
                 </div>
                 ))}
-            </div>
+            </motion.div>
 
-            <div className="rounded-lg shadow-md p-6 mb-8" style={{ background: '#161f30' }}>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.6 }}   
+              className="rounded-lg shadow-md p-6 mb-8" style={{ background: '#161f30' }}>
                 <form onSubmit={handleCommentSubmit}>
                 <div className="mb-4">
                     <label className="block text-gray-400 font-medium mb-2">Add a Comment</label>
@@ -175,7 +192,7 @@ const TaskDetail: React.FC = () => {
                     Add Comment
                 </button>
                 </form>
-            </div>
+            </motion.div>
         </div>
         )
     }

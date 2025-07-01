@@ -11,26 +11,22 @@
   /* --color-indigo-500: oklch(0.585 0.233 277.117); */
 }
 
-  /* body::-webkit-scrollbar {
-  display: none;
-} */
+
 .rdp-dropdown_root {
   border-color: #263757;
 }
-
 
 .rdp-months_dropdown, .rdp-years_dropdown {
   background-color: #161f30;
 }
 
-.main-timeline::-webkit-scrollbar {
+.main-timeline::-webkit-scrollbar, body::-webkit-scrollbar {
   display: none; 
 }
 
 #root {
   min-height: 100vh;
   background-color: #0e1525;
-  padding: 20px
 }
 
 .cl-internal-1grbo8b {

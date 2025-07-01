@@ -3,6 +3,7 @@ import type { FC, FormEvent } from "react";
 import Header from '../Components/Header'
 import axios from '../axios'; 
 import Swal from 'sweetalert2'
+import { motion } from 'framer-motion';
 
 interface Project {
   id: string;
@@ -111,17 +112,25 @@ function Projects() {
     <Header isHome={false} />
 
 
-    <div className="container mx-auto" style={{ paddingTop : '140px' }}>
-      <div className="flex flex-col md:flex-row md:justify-between md:items-center mb-6 border-b dark:border-blue-500 pb-4">
+    <div className="container mx-auto px-6 py-8" style={{ paddingTop : '140px' }}>
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0 }}   
+        className="flex justify-between items-center mb-6 border-b dark:border-blue-500 pb-4">
         <h4 className="text-3xl font-semibold mb-4 md:mb-0 text-white">Projects</h4>
         <button
-          className="bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg px-4 py-2 transition w-full md:w-auto cursor-pointer"
+          className="bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg px-4 py-2 transition md:mt-0 cursor-pointer"
           onClick={openAddProjectModal}
         >
           Add Project
         </button>
-      </div>
-      <div className="relative overflow-x-auto rounded-lg shadow">
+      </motion.div>
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.2 }}  
+        className="relative overflow-x-auto rounded-lg shadow">
         <table className="w-full text-sm text-center text-gray-300">
           <thead className="text-xs uppercase bg-gray-900 text-gray-400">
             <tr>
@@ -173,7 +182,7 @@ function Projects() {
 
           </tbody>
         </table>
-      </div>
+      </motion.div>
 
       {/* Add/Edit Project Modal */}
       {showFormModal && (

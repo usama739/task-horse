@@ -106,7 +106,7 @@ const LineChart: React.FC<LineChartProps> = ({ startDate, endDate, projectId, st
       ) : (
         <div className="flex justify-center items-center py-8">
             <div className="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
-            <span className="ml-2 text-gray-500">Loading...</span>
+            <span className="ml-2 text-gray-500">Fetching latest data, please wait...</span>
         </div>
       )}
     </div>
