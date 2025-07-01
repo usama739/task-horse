@@ -13,6 +13,8 @@ import TasksByUserChart from '../Components/TasksByUserChart';
 import PriorityPieChart from '../Components/PriorityPieChart';
 import ProjectDonutChart from '../Components/ProjectDonutChart';
 import axios from '../axios'; 
+import CountUp from 'react-countup';
+import { motion } from "framer-motion";
 
 interface Project {
   id: number;
@@ -95,9 +97,13 @@ const Dashboard: React.FC = () => {
       
       <div className="container mx-auto px-4 pb-5" style={{ marginTop: '120px' }}>
         {/* Header and Filters */}
-        <div className="mb-10 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0  }} 
+          className="mb-10 flex flex-col md:flex-row md:items-center md:justify-between gap-10">
           <h1 className="text-3xl font-bold text-white">Dashboard</h1>
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-col sm:flex-row flex-wrap gap-2 sm:items-center">
             
             {/* Start Date */}
             <div>
@@ -106,7 +112,7 @@ const Dashboard: React.FC = () => {
                   <Button
                     variant="outline"
                     id="date"
-                    className="w-48 justify-between font-normal text-white bg-[#161f30] border border-blue-700 hover:border-blue-600 hover:bg-[#161f30] hover:text-white focus:ring-2 focus:ring-blue-500"
+                    className="w-full md:w-48 justify-between font-normal text-white bg-[#161f30] border border-blue-700 hover:border-blue-600 hover:bg-[#161f30] hover:text-white focus:ring-2 focus:ring-blue-500"
                   >
                     {startDate ? dayjs(startDate).format("YYYY-MM-DD") : "Start date"}
                     <CalendarIcon />
@@ -126,7 +132,7 @@ const Dashboard: React.FC = () => {
               </Popover>
             </div>
 
-            <span className='text-white py-1.5'> - </span>
+            <span className='text-white hidden md:inline'> - </span>
 
             {/* End Date */}
             <div>
@@ -135,7 +141,7 @@ const Dashboard: React.FC = () => {
                   <Button
                     variant="outline"
                     id="date"
-                    className="w-48 justify-between font-normal text-white bg-[#161f30] border border-blue-700 hover:border-blue-600 hover:bg-[#161f30] hover:text-white focus:ring-2 focus:ring-blue-500"
+                    className="w-full md:w-48 justify-between font-normal text-white bg-[#161f30] border border-blue-700 hover:border-blue-600 hover:bg-[#161f30] hover:text-white focus:ring-2 focus:ring-blue-500"
                   >
                     {endDate ? dayjs(endDate).format("YYYY-MM-DD") : "End date"}
                     <CalendarIcon />
@@ -168,13 +174,16 @@ const Dashboard: React.FC = () => {
               <option value="Completed">Completed</option>
             </select>
           </div>
-        </div>
+        </motion.div>
 
 
-        {/* Overview Stats */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
           {/* Total Users */}
-          <div className="bg-[#1f2937] p-6 rounded-xl shadow-lg flex items-center gap-4 border border-blue-800">
+          <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+          className="bg-[#1f2937] p-6 rounded-xl shadow-lg flex items-center gap-4 border border-blue-800 hover:scale-105">
             <div className="bg-blue-600 p-3 rounded-full text-white">
               <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a4 4 0 00-4-4h-1M9 20H4v-2a4 4 0 014-4h1m0-4a4 4 0 100-8 4 4 0 000 8zm6 0a4 4 0 100-8 4 4 0 000 8z" />
@@ -182,12 +191,17 @@ const Dashboard: React.FC = () => {
             </div>
             <div>
               <h3 className="text-sm text-gray-400">Total Users</h3>
-              <p className="text-2xl font-bold text-white">{overview.users}</p>
+              <p className="text-2xl font-bold text-white">
+                <CountUp end={overview.users} duration={1.5} /></p>
             </div>
-          </div>
+          </motion.div>
 
           {/* Total Tasks */}
-          <div className="bg-[#1f2937] p-6 rounded-xl shadow-lg flex items-center gap-4 border border-blue-800">
+          <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+          className="bg-[#1f2937] p-6 rounded-xl shadow-lg flex items-center gap-4 border border-blue-800 hover:scale-105">
             <div className="bg-yellow-500 p-3 rounded-full text-white">
               <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 17v-6h13M9 17l-4-4m0 0l4-4m-4 4h13" />
@@ -195,12 +209,17 @@ const Dashboard: React.FC = () => {
             </div>
             <div>
               <h3 className="text-sm text-gray-400">Total Tasks</h3>
-              <p className="text-2xl font-bold text-white">{overview.tasks}</p>
+              <p className="text-2xl font-bold text-white">
+                <CountUp end={overview.tasks} duration={1.5} /></p>
             </div>
-          </div>
+          </motion.div>
 
           {/* Total Projects */}
-          <div className="bg-[#1f2937] p-6 rounded-xl shadow-lg flex items-center gap-4 border border-blue-800">
+          <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+          className="bg-[#1f2937] p-6 rounded-xl shadow-lg flex items-center gap-4 border border-blue-800 hover:scale-105">
             <div className="bg-green-600 p-3 rounded-full text-white">
               <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c.132 0 .263.007.393.02M4 6h16M4 10h16M4 14h16M4 18h16" />
@@ -208,60 +227,60 @@ const Dashboard: React.FC = () => {
             </div>
             <div>
               <h3 className="text-sm text-gray-400">Total Projects</h3>
-              <p className="text-2xl font-bold text-white">{overview.projects}</p>
+              <p className="text-2xl font-bold text-white">
+                <CountUp end={overview.projects} duration={1.5} /></p>
             </div>
-          </div>
+          </motion.div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
-          <PriorityProgress label="High" value={priorityCounts.high} color="#EF4444" />
-          <PriorityProgress label="Medium" value={priorityCounts.medium} color="#FACC15" />
-          <PriorityProgress label="Low" value={priorityCounts.low} color="#10B981" />
-        </div>
-
-        {/* Stats Summary Cards */}
-        {/* <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
-          <div className="bg-gradient-to-r from-red-600 to-red-500 text-white p-4 rounded-xl text-center shadow-md">
-            <h3 className="text-lg font-semibold">High Priority</h3>
-            <p className="text-2xl font-bold">{priorityCounts.high}</p>
-          </div>
-          <div className="bg-yellow-500 text-white p-4 rounded-xl text-center shadow-md">
-            <h3 className="text-lg font-semibold">Medium Priority</h3>
-            <p className="text-2xl font-bold">{priorityCounts.medium}</p>
-          </div>
-          <div className="bg-green-600 text-white p-4 rounded-xl text-center shadow-md">
-            <h3 className="text-lg font-semibold">Low Priority</h3>
-            <p className="text-2xl font-bold">{priorityCounts.low}</p>
-          </div>
-        </div> */}
+        <PriorityProgress counts={priorityCounts} />
 
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-10">
-          {/* line chart */}
-          <div className="rounded-xl p-6 shadow flex flex-col" style={{ background: '#161f30' }}>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.6 }}
+            className="rounded-xl p-6 shadow flex flex-col" style={{ background: '#161f30', height: '450px' }}>
               <h2 className="border-b border-blue-500 text-xl font-semibold text-white mb-4 pb-4">Task Volume by Status</h2>
               <LineChart startDate={startDate} endDate={endDate} projectId={projectId} status={status}  />
-            </div>
+            </motion.div>
 
-            <div className="rounded-xl p-6 shadow flex flex-col" style={{ background: '#161f30' }}>
-              <h2 className="border-b border-blue-500 text-xl font-semibold text-white mb-4 pb-4">Tasks Completed Per User</h2>
-              <TasksByUserChart startDate={startDate} endDate={endDate} projectId={projectId} status={status} />
-            </div>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.8 }} 
+              className="rounded-xl p-6 shadow flex flex-col" style={{ background: '#161f30', height: '450px' }}>
+                <h2 className="border-b border-blue-500 text-xl font-semibold text-white mb-4 pb-4">Tasks Completed Per User</h2>
+                <TasksByUserChart startDate={startDate} endDate={endDate} projectId={projectId} status={status} />
+            </motion.div>
 
-            <div className="rounded-xl p-6 shadow flex flex-col" style={{ background: '#161f30' }}>
-              <h2 className="border-b border-blue-500 text-xl font-semibold text-white mb-4 pb-4">Current Tasks by Priority</h2>
-              <PriorityPieChart startDate={startDate} endDate={endDate} projectId={projectId} status={status} />
-            </div>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 1 }} 
+              className="rounded-xl p-6 shadow flex flex-col" style={{ background: '#161f30', height: '450px' }}>
+                <h2 className="border-b border-blue-500 text-xl font-semibold text-white mb-4 pb-4">Current Tasks by Priority</h2>
+                <div className="flex justify-center items-center h-full">
+                  <PriorityPieChart startDate={startDate} endDate={endDate} projectId={projectId} status={status} />
+                </div>
+            </motion.div>
 
-            <div className="rounded-xl p-6 shadow flex flex-col" style={{ background: '#161f30' }}>
-              <h2 className="border-b border-blue-500 text-xl font-semibold text-white mb-4 pb-4">Tasks by Project</h2>
-              <ProjectDonutChart startDate={startDate} endDate={endDate} projectId={projectId} status={status} />
-            </div>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 1.2 }} 
+              className="rounded-xl p-6 shadow flex flex-col" style={{ background: '#161f30', height: '450px' }}>
+                <h2 className="border-b border-blue-500 text-xl font-semibold text-white mb-4 pb-4">Tasks by Project</h2>
+                <div className="flex justify-center items-center h-full">
+                  <ProjectDonutChart startDate={startDate} endDate={endDate} projectId={projectId} status={status} />
+                </div>
+            </motion.div>
         </div>
 
 
         {/* Timeline & Activity */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {/* <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="rounded-xl p-6 shadow flex flex-col" style={{ background: '#161f30', minHeight: 260 }}>
             <h2 className="border-b border-blue-500 text-xl font-semibold text-white mb-4 pb-4">Tasks Timeline</h2>
             <ul className="space-y-4 text-white">
@@ -269,7 +288,6 @@ const Dashboard: React.FC = () => {
                 <span className="absolute left-0 top-1 w-3 h-3 bg-blue-500 rounded-full"></span>
                 <span className="pl-5 text-blue-200 font-semibold">2025-06-01</span> — Task "Design UI" created
               </li>
-              {/* More static/dynamic timeline entries */}
             </ul>
           </div>
 
@@ -281,10 +299,9 @@ const Dashboard: React.FC = () => {
                 <span className="text-blue-100">Task <span className="font-semibold text-white">"Setup AWS S3"</span> was completed by <span className="font-semibold text-white">Alex</span></span>
                 <span className="ml-auto text-xs text-blue-400">2 hours ago</span>
               </li>
-              {/* More activity entries */}
             </ul>
           </div>
-        </div>
+        </div> */}
       </div>
     </>
   );

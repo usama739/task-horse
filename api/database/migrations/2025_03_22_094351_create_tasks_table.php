@@ -17,11 +17,11 @@ return new class extends Migration
             $table->text('description')->nullable();
             $table->string('status')->default('pending'); // pending, in-progress, completed
             $table->string('priority')->default('Medium'); 
-            $table->unsignedBigInteger('category_id')->nullable(); // Foreign key to categories
+            $table->unsignedBigInteger('project_id')->nullable(); // Foreign key to projects
             $table->unsignedBigInteger('user_id'); // Foreign key to user (assigned to)
             $table->timestamps();
 
-            $table->foreign('category_id')->references('id')->on('categories')->onDelete('set null');
+            $table->foreign('project_id')->references('id')->on('projects')->onDelete('cascade');
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
         });
     }

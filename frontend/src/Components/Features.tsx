@@ -1,10 +1,15 @@
 import React from 'react'
+import { motion } from 'framer-motion'
 
 function Features() {
   return (
     <>
     <section id="features" className="py-24 clip-top-diagonal clip-bottom-diagonal" style={{ background: '#161f30' }}>
-      <div className="container mx-auto px-6">
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.6, duration: 0.6 }}  
+        className="container mx-auto px-6">
         <h2 className="text-3xl md:text-4xl font-bold text-center text-white">
           Features That Empower Your Team
         </h2>
@@ -22,7 +27,7 @@ function Features() {
             </div>
           ))}
         </div>
-      </div>
+      </motion.div>
     </section>
     </>
   )

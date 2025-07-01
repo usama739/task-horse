@@ -15,8 +15,10 @@ interface DonutChartProps {
 
 const ProjectDonutChart: React.FC<DonutChartProps> = ({ startDate, endDate, projectId, status }) => {
   const [data, setData] = useState<{ project: string; count: number }[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    setLoading(true);
     axios.get<any>('/dashboard/tasks-by-project', {
       params: {
         start_date: startDate ? dayjs(startDate).format("YYYY-MM-DD") : undefined,
@@ -26,6 +28,7 @@ const ProjectDonutChart: React.FC<DonutChartProps> = ({ startDate, endDate, proj
       }
     }).then((res) => {
       setData(res.data);
+      setLoading(false);
     });
   }, [startDate, endDate, projectId, status]);
 
@@ -63,12 +66,12 @@ const ProjectDonutChart: React.FC<DonutChartProps> = ({ startDate, endDate, proj
 
   return (
     <div className="p-6 flex flex-col">
-        {data ? (
+        {!loading ? (
             <Doughnut data={chartData} options={chartOptions} />
         ) : (
             <div className="flex justify-center items-center py-8">
                 <div className="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
-                <span className="ml-2 text-gray-500">Loading...</span>
+                <span className="ml-2 text-gray-500">Fetching latest data, please wait...</span>
             </div>
         )}
     </div>
