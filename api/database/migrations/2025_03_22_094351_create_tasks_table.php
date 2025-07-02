@@ -19,6 +19,7 @@ return new class extends Migration
             $table->string('priority')->default('Medium'); 
             $table->unsignedBigInteger('project_id')->nullable(); // Foreign key to projects
             $table->unsignedBigInteger('user_id'); // Foreign key to user (assigned to)
+            $table->date('due_date');
             $table->timestamps();
 
             $table->foreign('project_id')->references('id')->on('projects')->onDelete('cascade');

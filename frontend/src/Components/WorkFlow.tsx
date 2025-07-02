@@ -17,7 +17,7 @@ function WorkFlow() {
             { icon: 'fa-layer-group', title: '2. Organize & Assign', desc: 'Create projects, assign tasks, and upload files. Every file is encrypted and stored in the AWS cloud for maximum security.' },
             { icon: 'fa-rocket', title: '3. Track & Succeed', desc: 'Monitor progress, collaborate, and share files with confidence—your data is always safe with cloud‑based encryption.' },
           ].map((step, i) => (
-            <div key={i} className="flex flex-col items-center zoom-in">
+            <div key={i} className="flex flex-col items-center border border-blue-800 p-8 rounded-xl shadow-md hover:shadow-lg shadow-blue-500/50 transition-transform transform hover:scale-105">
               <div className="bg-blue-700 rounded-full p-5 mb-4 shadow-lg">
                 <i className={`fas ${step.icon} text-3xl text-white`} />
               </div>
