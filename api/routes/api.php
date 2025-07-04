@@ -7,13 +7,16 @@ use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\TaskCommentController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\ClerkWebhookController;
 
 
 Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
 
-Route::post('/clerk/webhook', [ClerkWebhookController::class, 'handle']);
+Route::post('/webhooks', [ClerkWebhookController::class, 'handle']);
+Route::post('/organizations', [OrganizationController::class, 'store']);
+// Route::get('/users/{clerk_id}', [UserController::class, 'findByClerkId']);
 
 
 Route::get('/dashboard/task-status-trend', [DashboardController::class, 'taskStatusTrend']);
