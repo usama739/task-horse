@@ -29,8 +29,8 @@
   background-color: #0e1525;
 }
 
-.cl-internal-1grbo8b {
-  background: rgb(22, 31, 48);
+.cl-userButtonPopoverMain, .cl-userButtonPopoverActionButton, .cl-userButtonPopoverFooter {
+  background: rgb(22, 31, 48) !important;
   color: white;
 }
 
