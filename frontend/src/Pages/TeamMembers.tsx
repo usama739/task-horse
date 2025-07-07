@@ -135,7 +135,7 @@ const TeamMembers: React.FC = () => {
                 <th className="px-6 py-3">Actions</th>
               </tr>
             </thead>
-            <tbody style={{ background: '#0c1220' }}>
+            <tbody className='divide-y' style={{ background: '#0c1220' }}>
               {isLoading ? (
                 <tr>
                   <td colSpan={3}>
