@@ -5,14 +5,7 @@
     <title>Team Invite</title>
 </head>
 <body>
-    <h2>Hello {{ $user->name }},</h2>
-
-    <p>You’ve been added to the team at {{ config('app.name') }}!</p>
-
-    <p>You can log in to your account using your email and password that was shared with you.</p>
-
-    <p>If you have any issues, feel free to reach out.</p>
-
-    <p>Thanks,<br>{{ config('app.name') }} Team</p>
-</body>
+    <h1>Welcome to the Team, {{ $user->name }}!</h1>
+    <p>Your email: {{ $user->email }}</p>
+    <p>You have been added to the team. Please login using your credentials.</p>
 </html>

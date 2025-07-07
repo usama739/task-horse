@@ -12,8 +12,8 @@ const Header: FC<HeaderProps> = ({ isHome  }) => {
 
     const getNavLinkClass = (path: string) => {
       const isActive = location.pathname.includes(path);
-      return `block py-1 px-3 rounded hover:bg-blue-500 text-white cursor-pointer transition ${
-        isActive ? "bg-blue-600" : ""
+      return `block py-1 px-3 rounded hover:text-blue-400 cursor-pointer transition ${
+        isActive ? "text-blue-600" : "text-white"
       }`;
     };
 
@@ -22,10 +22,10 @@ const Header: FC<HeaderProps> = ({ isHome  }) => {
       className={`${
         isHome
           ? "w-full px-6 py-4 flex justify-between items-center bg-gradient-to-r from-black via-blue-950 to-blue-700 shadow-lg"
-          : "bg-[#0e1525] shadow-sm py-3 fixed w-full z-20 top-0 start-0"
+          : "bg-[#0e1525] py-3 fixed w-full z-20 top-0 start-0"
       }`}
     >
-      <div className="container mx-auto flex flex-wrap items-center justify-between px-3">
+      <div className="container mx-auto flex flex-wrap items-center justify-between">
         <Link to={isHome ? "/" : "/tasks"} className="flex items-center gap-2">
           <img src="/logo4.png" alt="TaskHorse Logo" style={{ height: 40 }} />
         </Link>
@@ -36,12 +36,10 @@ const Header: FC<HeaderProps> = ({ isHome  }) => {
               <SignInButton />
               <SignUpButton />
             </SignedOut>
-            <SignedIn>
-              <UserButton />
-            </SignedIn>
+            
           </nav>
         ) : (
-          <nav className="flex items-center gap-6">
+          <nav className="flex items-center gap-6 bg-gray-800 px-4 p-2 border:none rounded-full underlined">
             <ul className="flex space-x-2 items-center">
               <li>
                 <Link to="/tasks" className={getNavLinkClass("/tasks")}>
@@ -59,11 +57,14 @@ const Header: FC<HeaderProps> = ({ isHome  }) => {
                 </Link>
               </li>
             </ul>
-            <SignedIn>
-              <UserButton />
-            </SignedIn>
+           
           </nav>
         )}
+
+        <SignedIn>
+          <UserButton />
+        </SignedIn>
+
       </div>
     </header>
   )
