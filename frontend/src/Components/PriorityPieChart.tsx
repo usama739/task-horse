@@ -3,6 +3,8 @@ import { Chart as ChartJS, PieController, ArcElement, Tooltip, Legend } from 'ch
 import { Pie } from 'react-chartjs-2';
 import axios from '../axios'; 
 import dayjs from 'dayjs';
+import { useAuth } from '@clerk/clerk-react';
+
 
 ChartJS.register(PieController, ArcElement, Tooltip, Legend);
 
@@ -16,20 +18,31 @@ interface PieChartProps {
 const PriorityPieChart: React.FC<PieChartProps> = ({ startDate, endDate, projectId, status }) => {
   const [priorityData, setPriorityData] = useState<{ priority: string; count: number }[]>([]);
   const [loading, setLoading] = useState(true);
+  const { getToken } = useAuth();
 
   useEffect(() => {
-    setLoading(true);
-    axios.get<any>('/dashboard/tasks-by-priority', {
-      params: {
-        start_date: startDate ? dayjs(startDate).format("YYYY-MM-DD") : undefined,
-        end_date: endDate ? dayjs(endDate).format("YYYY-MM-DD") : undefined,
-        project_id: projectId,
-        status: status,
-      }
-    }).then((res) => {
-      setPriorityData(res.data);
-      setLoading(false);
-    });
+    const fetchPieChartData = async () => {
+      setLoading(true);
+      const token = await getToken();
+      if (!token) return;
+
+      axios.get<any>('/dashboard/tasks-by-priority', {
+        params: {
+          start_date: startDate ? dayjs(startDate).format("YYYY-MM-DD") : undefined,
+          end_date: endDate ? dayjs(endDate).format("YYYY-MM-DD") : undefined,
+          project_id: projectId,
+          status: status,
+        },
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }).then((res) => {
+        setPriorityData(res.data);
+        setLoading(false);
+      }); 
+    }
+
+    fetchPieChartData();
   }, [startDate, endDate, projectId, status]);
 
   const chartData = {

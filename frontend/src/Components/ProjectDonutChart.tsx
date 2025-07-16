@@ -3,6 +3,7 @@ import { Chart as ChartJS, DoughnutController, ArcElement, Tooltip, Legend } fro
 import { Doughnut } from 'react-chartjs-2';
 import axios from '../axios'; // adjust path if needed
 import dayjs from 'dayjs';
+import { useAuth } from '@clerk/clerk-react';
 
 ChartJS.register(DoughnutController, ArcElement, Tooltip, Legend);
 
@@ -16,20 +17,31 @@ interface DonutChartProps {
 const ProjectDonutChart: React.FC<DonutChartProps> = ({ startDate, endDate, projectId, status }) => {
   const [data, setData] = useState<{ project: string; count: number }[]>([]);
   const [loading, setLoading] = useState(true);
+  const { getToken } = useAuth();
 
   useEffect(() => {
-    setLoading(true);
-    axios.get<any>('/dashboard/tasks-by-project', {
-      params: {
-        start_date: startDate ? dayjs(startDate).format("YYYY-MM-DD") : undefined,
-        end_date: endDate ? dayjs(endDate).format("YYYY-MM-DD") : undefined,
-        project_id: projectId,
-        status: status,
-      }
-    }).then((res) => {
-      setData(res.data);
-      setLoading(false);
-    });
+    const fetchDonutChart = async () => {
+      setLoading(true);
+      const token = await getToken();
+      if (!token) return;
+
+      axios.get<any>('/dashboard/tasks-by-project', {
+        params: {
+          start_date: startDate ? dayjs(startDate).format("YYYY-MM-DD") : undefined,
+          end_date: endDate ? dayjs(endDate).format("YYYY-MM-DD") : undefined,
+          project_id: projectId,
+          status: status,
+        },
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }).then((res) => {
+        setData(res.data);
+        setLoading(false);
+      });
+    }
+    
+    fetchDonutChart();
   }, [startDate, endDate, projectId, status]);
 
   const chartData = {

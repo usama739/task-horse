@@ -2,13 +2,15 @@ import React from 'react'
 import type { FC } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { SignedIn, SignedOut,SignInButton, SignUpButton, UserButton } from '@clerk/clerk-react'
+import { useUserStore } from '../store/userStore';
 
 interface HeaderProps {
   isHome: boolean;
 }
 
 const Header: FC<HeaderProps> = ({ isHome  }) => {
-   const location = useLocation();
+   const isAdmin = useUserStore((state) => state.isAdmin);
+   const isMember = useUserStore((state) => state.isMember);
 
     const getNavLinkClass = (path: string) => {
       const isActive = location.pathname.includes(path);
@@ -41,21 +43,33 @@ const Header: FC<HeaderProps> = ({ isHome  }) => {
         ) : (
           <nav className="flex items-center gap-6 bg-gray-800 px-4 p-2 border:none rounded-full underlined">
             <ul className="flex space-x-2 items-center">
+              {isAdmin() && 
+                <Link to="/dashboard" className={getNavLinkClass("/dashboard")}>
+                  Dashboard
+                </Link>
+              }
+              <li>
+                
+              </li>
               <li>
                 <Link to="/tasks" className={getNavLinkClass("/tasks")}>
                   Tasks
                 </Link>
               </li>
-              <li>
-                <Link to="/team-members" className={getNavLinkClass("/team-members")}>
-                  Team Members
-                </Link>
-              </li>
-              <li>
-                <Link to="/projects" className={getNavLinkClass("/projects")}>
-                  Projects
-                </Link>
-              </li>
+              {isAdmin() && 
+                <>
+                  <li>
+                    <Link to="/team-members" className={getNavLinkClass("/team-members")}>
+                      Team Members
+                    </Link>
+                  </li>
+                  <li>
+                    <Link to="/projects" className={getNavLinkClass("/projects")}>
+                      Projects
+                    </Link>
+                  </li>
+                </>
+              }
             </ul>
            
           </nav>

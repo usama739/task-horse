@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\User;
+use App\Models\Organization;
 
 class OrganizationController extends Controller
 {
@@ -20,7 +22,6 @@ class OrganizationController extends Controller
 
         $organization = Organization::create([
             'name' => $request->name,
-            'admin_id' => $user->id,
         ]);
 
         $user->organization_id = $organization->id;

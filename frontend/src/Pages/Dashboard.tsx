@@ -15,6 +15,7 @@ import ProjectDonutChart from '../Components/ProjectDonutChart';
 import axios from '../axios'; 
 import CountUp from 'react-countup';
 import { motion } from "framer-motion";
+import { useAuth } from '@clerk/clerk-react';
 
 interface Project {
   id: number;
@@ -22,6 +23,7 @@ interface Project {
 }
 
 const Dashboard: React.FC = () => {
+  const { getToken } = useAuth();
   const [projectId, setProjectId] = useState('');
   const [status, setStatus] = useState('');
   const [startDate, setStartDate] = React.useState<Date | undefined>(undefined)
@@ -43,8 +45,14 @@ const Dashboard: React.FC = () => {
     setEndDate(today);
 
     const fetchProjects = async () => {
+      const token = await getToken();
+      if (!token) return;
       try {
-        const response = await axios.get<Project[]>('/projects');
+        const response = await axios.get<Project[]>('/projects', {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
         setprojects(response.data);
       } catch (error) {
         console.error('Error fetching projects:', error);
@@ -52,8 +60,14 @@ const Dashboard: React.FC = () => {
     };
 
     const fetchOverview = async () => {
+      const token = await getToken();
+      if (!token) return;
       try {
-        const res: any = await axios.get('/dashboard/overview-counts');
+        const res: any = await axios.get('/dashboard/overview-counts', {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
         setOverview(res.data);
       } catch (error) {
         console.error('Error fetching overview:', error);
@@ -69,7 +83,8 @@ const Dashboard: React.FC = () => {
 
   useEffect(() => {
     const fetchPriorityCounts = async () => {
-      if (!startDate || !endDate) return;
+      const token = await getToken();
+      if (!token || !startDate || !endDate) return;
 
       try {
         const response = await axios.get<any>('/dashboard/task-priority-counts', {
@@ -78,6 +93,9 @@ const Dashboard: React.FC = () => {
             end_date: dayjs(endDate).format("YYYY-MM-DD"),
             project_id: projectId,
             status: status,
+          },
+          headers: {
+            Authorization: `Bearer ${token}`,
           },
         });
         setPriorityCounts(response.data);

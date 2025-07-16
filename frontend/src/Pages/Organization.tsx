@@ -1,20 +1,27 @@
 import React, { useState } from "react";
-import { useUser } from "@clerk/clerk-react";
-import axios from "axios";
+import { useUser, useAuth } from "@clerk/clerk-react";
+import axios from "../axios";
 import { useNavigate } from "react-router-dom";
 
 const CreateOrganization: React.FC = () => {
+  const { getToken } = useAuth();
   const { user } = useUser();
   const [name, setName] = useState("");
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    const token = await getToken();
+    if (!token) return;
 
     try {
-      await axios.post("/api/organizations", {
+      await axios.post("/organizations", {
         name,
-        clerk_id: user?.id, // Send this to associate org with admin
+        clerk_id: user?.id,             // Send this to associate org with admin
+      }, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       });
 
       navigate("/projects"); 
