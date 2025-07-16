@@ -3,6 +3,8 @@ import Header from '../Components/Header';
 import axios from '../axios'; 
 import Swal from 'sweetalert2';
 import { motion } from 'framer-motion';
+import { useUser, useAuth } from "@clerk/clerk-react";
+
 interface TeamMember {
   id: number;
   name: string;
@@ -10,6 +12,8 @@ interface TeamMember {
 }
 
 const TeamMembers: React.FC = () => {
+  const { getToken } = useAuth();
+  const { user } = useUser();
   const [isLoading, setIsLoading] = useState(true);
   const [members, setMembers] = useState<TeamMember[]>([]);
   const [modalOpen, setModalOpen] = useState(false);
@@ -24,8 +28,14 @@ const TeamMembers: React.FC = () => {
 
   const fetchMembers = async () => {
     setIsLoading(true);
+    const token = await getToken();
+    if (!token) return;
     try {
-      const res = await axios.get<TeamMember[]>('/users');
+      const res = await axios.get<TeamMember[]>('/users', {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       setMembers(res.data);
     } catch (error) {
       console.error('Error fetching team members:', error);
@@ -57,8 +67,14 @@ const TeamMembers: React.FC = () => {
   };
 
   const handleDelete = async () => {
+    const token = await getToken();
+    if (!token) return;
     try {
-      await axios.delete(`/users/${deleteTarget.id}`);
+      await axios.delete(`/users/${deleteTarget.id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       Swal.fire({
         icon: 'success',
         title: 'User deleted successfully',
@@ -82,9 +98,15 @@ const TeamMembers: React.FC = () => {
     e.preventDefault();
     const method = isEditMode ? 'put' : 'post';
     const url = isEditMode ? `/users/${currentMember.id}` : '/users';
+    const token = await getToken();
+    if (!token) return;
 
     try {
-      const res: any = await axios[method](url, currentMember);
+      const res: any = await axios[method](url, currentMember, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       Swal.fire({
         icon: 'success',
         title: 'User saved successfully!',

@@ -16,7 +16,8 @@ class UserController extends Controller
         // if (auth()->user()->role !== 'admin') {
         //     abort(403, 'Unauthorized access.');
         // }
-        $users = User::where('role', 'member')->orderBy('created_at', 'desc')->get();
+
+        $users = User::where('role', 'member')->where('organization_id', auth()->user()->organization_id)->orderBy('created_at', 'desc')->get();
         return response()->json($users);
     }
 
@@ -29,7 +30,7 @@ class UserController extends Controller
         ]);
 
 
-         // Create Clerk user
+        // 1: Create Clerk user
         $response = Http::withHeaders([
             'Authorization' => 'Bearer ' . env('CLERK_SECRET_KEY'),
             'Content-Type' => 'application/json',
@@ -54,19 +55,18 @@ class UserController extends Controller
             ], 500);
         }
 
-        // Create local user
+        // 2: Create local user
         $user = User::create([
-            'name'     => $request->name,
-            'email'    => $request->email,
+            'name' => $request->name,
+            'email' => $request->email,
             'password' => Hash::make($request->password),
-            'role'     => 'member',
+            'role' => 'member',
             'clerk_id' => $clerkUser['id'],
+            'organization_id' => auth()->user()->organization_id,
         ]);
 
-        // Send custom email
+        // 3: Send custom email
         Mail::to($user->email)->send(new TeamInviteMail($user));
-        // detech issue in case of mail dont send
-        
 
         return response()->json([
             'message' => 'Team member created successfully.',
@@ -97,14 +97,14 @@ class UserController extends Controller
     }
 
 
-    // public function findByClerkId($clerk_id){
-    //     $user = User::where('clerk_id', $clerk_id)->first();
+    public function findByClerkId($clerk_id){
+        $user = User::where('clerk_id', $clerk_id)->first();
 
-    //     if (!$user) {
-    //         return response()->json(['message' => 'User not found'], 404);
-    //     }
+        if (!$user) {
+            return response()->json(['message' => 'User not found'], 404);
+        }
 
-    //     return response()->json($user);
-    // }
+        return response()->json($user);
+    }
 }
 

@@ -7,31 +7,50 @@ import Tasks from './Pages/Tasks';
 import NotFound from './Pages/NotFound';
 import ViewTask from './Pages/ViewTask';
 import CreateOrganization from './Pages/Organization';
-import { SignedIn } from '@clerk/clerk-react'
+import { SignedIn, SignedOut, RedirectToSignIn } from '@clerk/clerk-react'
 import Dashboard from './Pages/Dashboard';
+import AuthRedirect from './Pages/AuthRedirect';
+import { fetchLaravelUser } from './Hooks/fetchLaravelUser';
+import { useUserStore } from './store/userStore';
+
 
 function App() {
+  fetchLaravelUser();           /// save athenticated user in zustand store when app loads (after signUp/signIn)
+
+  const user = useUserStore((state) => state.user);
+  console.log("User Stored in Zustand: ", user);
+  
   return (
      <Router>
       <Routes>
-        {/* <Route path="/" element={<Navigate to="/Home" />} /> */}
         <Route path="/" element={<Home />} />
-        <Route
-          path="/create-organization"
-          element={
-            <SignedIn>
-              <CreateOrganization />
-            </SignedIn>
-          }
-        />
-        <Route path="/projects" element={<Projects />} />
-        <Route path="/team-members" element={<TeamMembers />} />
-        <Route path="/tasks" element={<Tasks />} />
-        <Route path="/tasks" element={<Tasks />} />
-        <Route path="/task/:id" element={<ViewTask />} />
-        <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="*" element={<NotFound />} />
       </Routes>
+      <SignedIn>
+        <AuthRedirect />
+        <Routes>
+          {/* <Route path="/" element={<Home />} /> */}
+          <Route path="/create-organization"
+            element={
+              <SignedIn>
+                <CreateOrganization />
+              </SignedIn>
+            }
+          />
+          <Route path="/projects" element={<Projects />} />
+          <Route path="/team-members" element={<TeamMembers />} />
+          <Route path="/tasks" element={<Tasks />} />
+          <Route path="/tasks" element={<Tasks />} />
+          <Route path="/task/:id" element={<ViewTask />} />
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </SignedIn>
+
+            
+      <SignedOut>
+        <RedirectToSignIn />
+      </SignedOut>
+      
     </Router>
   )
 }

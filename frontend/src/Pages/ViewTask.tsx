@@ -3,6 +3,8 @@ import axios from '../axios';
 import { useParams, Link } from 'react-router-dom';
 import Header from '../Components/Header';
 import { motion } from 'framer-motion';
+import { useAuth } from "@clerk/clerk-react";
+
 interface User {
   id: number;
   name: string;
@@ -28,6 +30,7 @@ interface Task {
 }
 
 const TaskDetail: React.FC = () => {
+  const { getToken } = useAuth();
   const { id } = useParams();
   const [task, setTask] = useState<Task | null>(null);
   const [comment, setComment] = useState('');
@@ -35,7 +38,13 @@ const TaskDetail: React.FC = () => {
 
   useEffect(() => {
     const fetchTask = async () => {
-      const res: any = await axios.get(`/tasks/${id}`);
+      const token = await getToken();
+      if (!token) return;
+      const res: any = await axios.get(`/tasks/${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       console.log(res.data);
       setTask(res.data);
     };
@@ -56,16 +65,32 @@ const TaskDetail: React.FC = () => {
 
   const handleCommentSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const response: any = await axios.post(`/tasks/${task?.id}/comments`, { comment });
+    const token = await getToken();
+    if (!token) return;
+    const response: any = await axios.post(`/tasks/${task?.id}/comments`, { comment }, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
     console.log(response.data);
     setComment('');
-    const res: any = await axios.get<Task[]>(`/tasks/${id}`);
+    const res: any = await axios.get<Task[]>(`/tasks/${id}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
     setTask(res.data);
   };
 
 
   const handleCommentDelete = async (commentId: number) => {
-    await axios.delete(`/comments/${commentId}`);
+    const token = await getToken();
+    if (!token) return;
+    await axios.delete(`/comments/${commentId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
     setTask((prev) =>
       prev
         ? { ...prev, comments: prev.comments.filter((c) => c.id !== commentId) }

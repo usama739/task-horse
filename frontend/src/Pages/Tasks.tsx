@@ -9,6 +9,9 @@ import Swal from 'sweetalert2'
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import CountUp from "react-countup";
+import { useAuth } from "@clerk/clerk-react";
+
+
 interface Task {
   id: number;
   title: string;
@@ -22,6 +25,7 @@ interface Task {
 }
 
 const TasksPage: React.FC = () => {
+  const { getToken } = useAuth();
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(true);
   const [tasks, setTasks] = useState<Task[]>([]);
@@ -54,6 +58,7 @@ const TasksPage: React.FC = () => {
     fetchTasks();
   }, []);
 
+
   // Filter tasks for table/calendar only
   useEffect(() => {
     const filtered = tasks.filter((t) => {
@@ -75,8 +80,14 @@ const TasksPage: React.FC = () => {
   
   const fetchTasks = async () => {
     setIsLoading(true);
+    const token = await getToken();
+    if (!token) return;
     try {
-      const res = await axios.get<Task[]>("/tasks");
+      const res = await axios.get<Task[]>("/tasks", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       setTasks(res.data);
     } catch (error) {
       console.error('Error fetching tasks:', error);
@@ -90,16 +101,26 @@ const TasksPage: React.FC = () => {
 
   // Load task data when editing
   useEffect(() => {
-    if (taskId !== null) {
-      axios.get<any>(`tasks/${taskId}`).then(res => {
-        setFormData(res.data);
-        setShowModal(true);
-      });
+    const loadTaskData = async () => {
+      if (taskId !== null) {
+        const token = await getToken();
+        if (!token) return;
+        axios.get<any>(`tasks/${taskId}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }).then(res => {
+          setFormData(res.data);
+          setShowModal(true);
+        });
+      }
     }
+    
+    loadTaskData();
   }, [taskId]);
 
 
-  const openModal = () => {
+  const openModal = async () => {
     setTaskId(null);
     setFormData({
       title: '',
@@ -111,8 +132,26 @@ const TasksPage: React.FC = () => {
       user_id: '',
     });
 
-    axios.get<any>('/projects').then(res => setprojects(res.data));
-    axios.get<any>('/users').then(res => setUsers(res.data));
+    const token = await getToken();
+    console.log(token)
+    if (!token) return;
+
+    axios.get<any>('/projects', {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }).then(res => 
+      setprojects(res.data)
+    );
+
+    axios.get<any>('/users', {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }).then(res => 
+      setUsers(res.data)
+    );
+
     setShowModal(true);
   };
 
@@ -123,9 +162,25 @@ const TasksPage: React.FC = () => {
   };
 
 
-  const openEditModal = (task: Task) => {
-    axios.get<any>('/projects').then(res => setprojects(res.data));
-    axios.get<any>('/users').then(res => setUsers(res.data));
+  const openEditModal = async (task: Task) => {
+    const token = await getToken();
+    if (!token) return;
+    axios.get<any>('/projects', {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }).then(res => 
+      setprojects(res.data)
+    );
+
+    axios.get<any>('/users', {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }).then(res => 
+      setUsers(res.data)
+    );
+
     setTaskId(task.id);
   };
 
@@ -147,11 +202,16 @@ const TasksPage: React.FC = () => {
       });
     }
 
+    const token = await getToken();
+    if (!token) return;
+
     if (taskId) {
       data.append('_method', 'PUT'); 
       try {
         await axios.post(`/tasks/${taskId}`, data, {
-          headers: { 'Content-Type': 'multipart/form-data' },
+          headers: { 
+            'Content-Type': 'multipart/form-data', 
+            Authorization: `Bearer ${token}`, }
         });
       } catch (error: any) {
         Swal.fire({
@@ -163,7 +223,10 @@ const TasksPage: React.FC = () => {
     } else {
       try {
         await axios.post('/tasks', data, {
-          headers: { 'Content-Type': 'multipart/form-data' },
+          headers: { 
+            'Content-Type': 'multipart/form-data', 
+            Authorization: `Bearer ${token}`
+          },
         });
       } catch (error: any) {
         Swal.fire({
@@ -197,8 +260,14 @@ const TasksPage: React.FC = () => {
 
 
   const handleDelete = async () => {
+    const token = await getToken();
+    if (!token) return;
     try {
-      await axios.delete(`tasks/${deleteTarget.id}`);
+      await axios.delete(`tasks/${deleteTarget.id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       Swal.fire({
         icon: 'success',
         title: 'Task deleted successfully!',

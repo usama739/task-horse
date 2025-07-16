@@ -12,14 +12,14 @@ class ProjectController extends Controller
         //     abort(403, 'Unauthorized access.');
         // }
 
-        $projects = Project::orderBy('created_at', 'desc')->get();;
+        $projects = Project::where('organization_id', auth()->user()->organization_id)->orderBy('created_at', 'desc')->get();;
         return response()->json($projects);
     }
 
 
     public function store(Request $request){
         $request->validate(['name' => 'required|string|max:255']);
-        Project::create(['name' => $request->name]);
+        Project::create(['name' => $request->name, 'organization_id' => auth()->user()->organization_id]);
 
         return response()->json(['success' => 'Project added successfully'], 201);
     }

@@ -4,6 +4,8 @@ import Header from '../Components/Header'
 import axios from '../axios'; 
 import Swal from 'sweetalert2'
 import { motion } from 'framer-motion';
+import { useAuth } from "@clerk/clerk-react";
+
 
 interface Project {
   id: string;
@@ -11,6 +13,7 @@ interface Project {
 }
 
 function Projects() {
+  const { getToken } = useAuth();
   const [isLoading, setIsLoading] = useState(true);
   const [projects, setProjects] = useState<Project[]>([]);
   const [showFormModal, setShowFormModal] = useState<boolean>(false);
@@ -24,8 +27,15 @@ function Projects() {
 
   const fetchProjects = async () => {
     setIsLoading(true);
+    const token = await getToken();
+    if (!token) return;
+
     try {
-      const res = await axios.get<Project[]>('/projects');
+      const res = await axios.get<Project[]>('/projects', {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       setProjects(res.data);
     } catch (error) {
       console.error('Error fetching projects:', error);
@@ -59,12 +69,17 @@ function Projects() {
   const handleProjectFormSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const url = projectForm.method === "POST" ? "/projects" : `projects/${projectForm.id}`;
-
+    const token = await getToken();
+    if (!token) return;
+    
     try {
       await axios({
         url,
         method: projectForm.method,
         data: { name: projectForm.name },
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       });
       Swal.fire({
         icon: 'success',
@@ -87,8 +102,15 @@ function Projects() {
 
 
   const handleDeleteProject = async () => {
+    const token = await getToken();
+    if (!token) return;
+
     try {
-      await axios.delete(`/projects/${deleteTarget.id}`);
+      await axios.delete(`/projects/${deleteTarget.id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       Swal.fire({
         icon: 'success',
         title: 'Project deleted successfully',

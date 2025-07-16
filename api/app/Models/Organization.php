@@ -8,6 +8,6 @@ class Organization extends Model
 {
     protected $fillable = [
         'name',
-        'admin_id', 
+        'organization_id'
     ];
 }

@@ -12,6 +12,7 @@ import {
   Legend,
 } from 'chart.js';
 import dayjs from 'dayjs';
+import { useAuth } from '@clerk/clerk-react';
 
 ChartJS.register(LineElement, PointElement, CategoryScale, LinearScale, Title, Tooltip, Legend);
 
@@ -23,11 +24,15 @@ interface LineChartProps {
 }
 
 const LineChart: React.FC<LineChartProps> = ({ startDate, endDate, projectId, status }) => {
+  const { getToken } = useAuth();
   const [chartData, setChartData] = useState<any>(null);
 
   useEffect(() => {
-    console.log('Fetching data for LineChart', { startDate, endDate, projectId, status });
-    const fetchData = async () => {
+    // console.log('Fetching data for LineChart', { startDate, endDate, projectId, status });
+    const fetchLineData = async () => {
+      const token = await getToken();
+      if (!token) return;
+
       const res = await axios.get('/dashboard/task-status-trend'
         , {
           params: {
@@ -35,7 +40,10 @@ const LineChart: React.FC<LineChartProps> = ({ startDate, endDate, projectId, st
             end_date: endDate ? dayjs(endDate).format("YYYY-MM-DD") : undefined,
             project_id: projectId,
             status: status,
-          }
+          },
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         }
       );
       const data = res.data as Record<string, { Created: number; 'In-Progress': number; Completed: number }>;
@@ -77,7 +85,7 @@ const LineChart: React.FC<LineChartProps> = ({ startDate, endDate, projectId, st
       });
     };
 
-    fetchData();
+    fetchLineData();
   }, [startDate, endDate, projectId, status]);
 
   const options = {
