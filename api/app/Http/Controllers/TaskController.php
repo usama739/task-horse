@@ -9,64 +9,44 @@ use App\Models\User;
 use App\Jobs\UploadTaskFileJob;
 
 class TaskController extends Controller {
-    public function getEvents() {
-        // if (auth()->user()->can('user')) {
-        //     $tasks = Task::where('user_id', auth()->id())->whereNotNull('due_date')->get();
-        // } else {
-        //     $tasks = Task::whereNotNull('due_date')->get();
-        // }
-
-        $tasks = Task::whereNotNull('due_date')->get();
-
-        $events = [];
-        foreach ($tasks as $task) {
-            $priorityClass = $task->priority == 'High' ? 'fc-event-high' 
-                       : ($task->priority == 'Medium' ? 'fc-event-medium' 
-                       : 'fc-event-low');
-            $events[] = [
-                'title' => $task->title,
-                'start' => $task->due_date, // Use due_date as event date
-                'classNames' => [$priorityClass], 
-            ];
-        }
-    
-        return response()->json($events);
-    }
-
-    public function index() {
-        //get all tasks with project and uer name
-        $tasks = Task::with(['project', 'user'])->orderBy('due_date', 'asc')->get();
-        return response()->json($tasks);
-    }
-
-
-    // public function index() {
+    // public function getEvents() {
     //     if (auth()->user()->can('user')) {
-    //         $tasks = Task::where('user_id', auth()->id())->orderBy('created_at', 'desc')->get();
-    //         $timelineTasks = Task::where('user_id', auth()->id())->orderBy('due_date', 'desc')->get();
-    //         $users = []; 
+    //         $tasks = Task::where('user_id', auth()->id())->whereNotNull('due_date')->get();
     //     } else {
-    //         $tasks = Task::orderBy('created_at', 'desc')->get();
-    //         $timelineTasks = Task::orderBy('due_date', 'desc')->get();
-
-    //         if (auth()->user()->role == 'admin') {
-    //             $users = User::whereIn('role', ['manager', 'user'])->get();
-    //         } else {
-    //             $users = User::where('role', 'user')->get();
-    //         }
+    //         $tasks = Task::whereNotNull('due_date')->get();
     //     }
 
-    //      // Count tasks based on status
-    //     $pendingCount = $tasks->where('status', 'Pending')->count();
-    //     $inProgressCount = $tasks->where('status', 'In-Progress')->count();
-    //     $completedCount = $tasks->where('status', 'Completed')->count();
+    //     $tasks = Task::whereNotNull('due_date')->get();
 
-    //     $categories = Category::all();
-
-
-    //     return view('tasks.index', compact('tasks', 'timelineTasks', 'categories', 'users', 'pendingCount', 'inProgressCount', 'completedCount'));
+    //     $events = [];
+    //     foreach ($tasks as $task) {
+    //         $priorityClass = $task->priority == 'High' ? 'fc-event-high' 
+    //                    : ($task->priority == 'Medium' ? 'fc-event-medium' 
+    //                    : 'fc-event-low');
+    //         $events[] = [
+    //             'title' => $task->title,
+    //             'start' => $task->due_date, // Use due_date as event date
+    //             'classNames' => [$priorityClass], 
+    //         ];
+    //     }
+    
+    //     return response()->json($events);
     // }
 
+    public function index() {
+        $query = Task::query();
+        if(auth()->user()->role == 'member'){
+            $query->where('user_id', auth()->user()->id);
+        }
+        
+        //get all tasks with project and user name
+        $tasks = $query->with(['project', 'user'])
+        ->whereHas('project', function($query) { 
+            $query->where('organization_id', auth()->user()->organization_id); 
+        })
+        ->orderBy('due_date', 'asc')->get();
+        return response()->json($tasks);
+    }
 
 
     public function store(Request $request) {
@@ -91,7 +71,7 @@ class TaskController extends Controller {
             foreach ($request->file('attachments') as $file) {
                 $originalName = $file->getClientOriginalName();
                 $path = $file->storeAs('temp', $originalName, 'local');
-                UploadTaskFileJob::dispatch($path, $task->id, '1');
+                UploadTaskFileJob::dispatch($path, $task->id, auth()->user()->id);
             }
         }
 
@@ -134,7 +114,6 @@ class TaskController extends Controller {
     public function show($id) {
         $task = Task::with('comments.user')->findOrFail($id);           // there is also relaton between comments ans user
         return response()->json($task);
-        // return view('tasks.show', compact('task'));
     }
 
 

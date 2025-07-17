@@ -3,8 +3,10 @@ import { useEffect } from "react";
 import axios from "../axios";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from '@clerk/clerk-react';
+import { useUserStore } from '../store/userStore';
 
 const AuthRedirect = () => {
+  const isMember = useUserStore((state) => state.isMember);
   const { getToken } = useAuth();
   const { user, isSignedIn } = useUser();
   const navigate = useNavigate();
@@ -22,12 +24,17 @@ const AuthRedirect = () => {
             },
           });
           const hasOrg = res.data.organization_id !== null;
-
-          if (hasOrg) {
-              navigate("/dashboard");
+          console.log("Member = ",isMember());
+          if(isMember()){
+              navigate("/tasks");
           } else {
-              navigate("/create-organization");
+            if (hasOrg) {
+                navigate("/dashboard");
+            } else {
+                navigate("/create-organization");
+            }
           }
+          
         } catch (error) {
           console.error("Error checking organization:", error);
         }
