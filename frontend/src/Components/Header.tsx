@@ -9,8 +9,7 @@ interface HeaderProps {
 }
 
 const Header: FC<HeaderProps> = ({ isHome  }) => {
-   const isAdmin = useUserStore((state) => state.isAdmin);
-   const isMember = useUserStore((state) => state.isMember);
+    const isAdmin = useUserStore((state) => state.isAdmin);
 
     const getNavLinkClass = (path: string) => {
       const isActive = location.pathname.includes(path);
@@ -19,7 +18,7 @@ const Header: FC<HeaderProps> = ({ isHome  }) => {
       }`;
     };
 
-  return (
+    return (
     <header
       className={`${
         isHome

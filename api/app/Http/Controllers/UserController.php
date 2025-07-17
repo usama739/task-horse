@@ -13,9 +13,9 @@ use Illuminate\Support\Facades\Hash;
 class UserController extends Controller
 {
     public function index(){
-        // if (auth()->user()->role !== 'admin') {
-        //     abort(403, 'Unauthorized access.');
-        // }
+        if (auth()->user()->role !== 'admin') {
+            abort(403, 'Unauthorized access.');
+        }
 
         $users = User::where('role', 'member')->where('organization_id', auth()->user()->organization_id)->orderBy('created_at', 'desc')->get();
         return response()->json($users);

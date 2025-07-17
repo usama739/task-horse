@@ -9,13 +9,15 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 
-class DashboardController extends Controller
-{
+class DashboardController extends Controller{
     public function taskStatusTrend(Request $request){
         $start = $request->start_date ? Carbon::parse($request->start_date)->startOfDay() : Carbon::now()->subDays(30)->startOfDay();
         $end = $request->end_date ? Carbon::parse($request->end_date)->endOfDay() : Carbon::now()->endOfDay();
 
-        $query = Task::whereBetween('created_at', [$start, $end]);
+        $query = Task::whereHas('project', function($query){
+            $query->where('organization_id', auth()->user()->organization_id);
+        })
+        ->whereBetween('created_at', [$start, $end]);
 
         if ($request->has('project_id') && $request->project_id) {
             $query->where('project_id', $request->project_id);
@@ -62,7 +64,10 @@ class DashboardController extends Controller
         $users = User::all(['id', 'name']); 
         $data = [];
         foreach ($users as $user) {
-            $query = Task::where('user_id', $user->id)->where('status', 'Completed');
+            $query = Task::whereHas('project', function($query){
+                $query->where('organization_id', auth()->user()->organization_id);
+            })
+            ->where('user_id', $user->id)->where('status', 'Completed');
 
             if ($start && $end) {
                 $query->whereBetween('created_at', [$start, $end]);
@@ -87,7 +92,10 @@ class DashboardController extends Controller
         $start = $request->start_date ? Carbon::parse($request->start_date)->startOfDay() : Carbon::now()->subDays(30)->startOfDay();
         $end = $request->end_date ? Carbon::parse($request->end_date)->endOfDay() : Carbon::now()->endOfDay();
 
-        $query = $query->whereBetween('created_at', [$start, $end]);
+        $query = $query->whereHas('project', function($query){
+            $query->where('organization_id', auth()->user()->organization_id);
+        })
+        ->whereBetween('created_at', [$start, $end]);
 
         if ($request->has('project_id') && $request->project_id) {
             $query->where('project_id', $request->project_id);
@@ -110,7 +118,10 @@ class DashboardController extends Controller
         $start = $request->start_date ? Carbon::parse($request->start_date)->startOfDay() : Carbon::now()->subDays(30)->startOfDay();
         $end = $request->end_date ? Carbon::parse($request->end_date)->endOfDay() : Carbon::now()->endOfDay();
 
-        $query = $query->whereBetween('created_at', [$start, $end]);
+        $query = $query->whereHas('project', function($query){
+            $query->where('organization_id', auth()->user()->organization_id);
+        })
+        ->whereBetween('created_at', [$start, $end]);
 
          if ($request->has('status') && $request->status) {
             $query->where('status', $request->status);
@@ -144,7 +155,11 @@ class DashboardController extends Controller
 
         $start = Carbon::parse($request->start_date)->startOfDay();
         $end = Carbon::parse($request->end_date)->endOfDay();
-        $query->whereBetween('created_at', [$start, $end]);
+        
+        $query->whereHas('project', function($query){
+            $query->where('organization_id', auth()->user()->organization_id);
+        })
+        ->whereBetween('created_at', [$start, $end]);
         
         return response()->json([
             'high' => $query->clone()->where('priority', 'High')->count(),
@@ -155,9 +170,11 @@ class DashboardController extends Controller
 
 
     public function overviewCounts(){
-        $totalUsers = User::count();
-        $totalTasks = Task::count();
-        $totalProjects = Project::count();
+        $totalUsers = User::where('role', 'member')->where('organization_id', auth()->user()->organization_id)->count();
+        $totalTasks = Task::whereHas('project', function($query) {
+            $query->where('organization_id', auth()->user()->organization_id);
+        })->count();
+        $totalProjects = Project::where('organization_id', auth()->user()->organization_id)->count();
 
         return response()->json([
             'users' => $totalUsers,

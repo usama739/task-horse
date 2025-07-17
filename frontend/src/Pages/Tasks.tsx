@@ -10,6 +10,7 @@ import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import CountUp from "react-countup";
 import { useAuth } from "@clerk/clerk-react";
+import { useUserStore } from '../store/userStore';
 
 
 interface Task {
@@ -25,6 +26,7 @@ interface Task {
 }
 
 const TasksPage: React.FC = () => {
+  const isAdmin = useUserStore((state) => state.isAdmin);
   const { getToken } = useAuth();
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(true);
@@ -369,11 +371,11 @@ const TasksPage: React.FC = () => {
                 <option value="Completed">Completed</option>
             </select>
 
-            {/* {currentUserRole !== 'user' && ( */}
+            {isAdmin() && (
               <button className="bg-blue-600 text-white px-4 py-2 rounded-lg font-semibold cursor-pointer" onClick={openModal}>
                 Add Task
               </button>
-            {/* )} */}
+             )} 
           </div>
         </motion.div>
 
@@ -390,9 +392,9 @@ const TasksPage: React.FC = () => {
                 <th className="px-6 py-3">Status</th>
                 <th className="px-6 py-3">Project</th>
                 <th className="px-6 py-3">Due Date</th>
-                {/* {currentUserRole !== 'user' && */}
-                <th className="px-6 py-3">Assigned To</th>
-                {/* } */}
+                {isAdmin() &&
+                  <th className="px-6 py-3">Assigned To</th>
+                 } 
                 <th className="px-6 py-3">Actions</th>
               </tr>
             </thead>
@@ -417,27 +419,27 @@ const TasksPage: React.FC = () => {
                   <tr key={task.id} className="border-b">
                     <td className="px-6 py-4">{task.title}</td>
                     <td>
-                      <span className={`inline-block rounded px-2 py-1 text-xs font-semibold text-white bg-${getPriorityColor(task.priority)}-500 bg-opacity-20`}>
+                      <span className={`inline-block rounded px-2 py-1 text-xs font-semibold text-white bg-${getPriorityColor(task.priority)}-600 bg-opacity-20`}>
                         {task.priority}
                       </span>
                     </td>
                     <td>
-                      <span className={`inline-block rounded px-2 py-1 text-xs font-semibold text-white bg-${getStatusColor(task.status)}-500 bg-opacity-20`}>
+                      <span className={`inline-block rounded px-2 py-1 text-xs font-semibold text-white bg-${getStatusColor(task.status)}-600 bg-opacity-20`}>
                         {task.status}
                       </span>
                     </td>
                     <td>{task.project?.name || 'No Project'}</td>
                     <td>{task.due_date ? formatDate(task.due_date) : 'No Due Date'}</td>
-                    {/* /{currentUserRole !== 'user' &&   */}
+                    {isAdmin() &&  
                         <td>{task.user?.name}</td>
-                    {/* } */}
+                     } 
                     <td>
                       <div className="inline-flex overflow-hidden shadow-sm py-6" role="group">
                         <button className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-s-lg text-sm" onClick={() => navigate(`/task/${task.id}`)}>View</button>
-                        {/* {currentUserRole !== 'user' && ( */}
-                            <button className="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 text-sm" onClick={() => openEditModal(task)}>Edit</button>
-                            <button className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-e-lg text-sm" onClick={() => handleDeleteModal(task)}>Delete</button>
-                        {/* )} */}
+                        <button className="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 text-sm" onClick={() => openEditModal(task)}>Edit</button>
+                        {isAdmin() && (
+                          <button className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-e-lg text-sm" onClick={() => handleDeleteModal(task)}>Delete</button>
+                        )}
                       </div>
                     </td>
                   </tr>

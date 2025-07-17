@@ -12,7 +12,7 @@ class TaskCommentController extends Controller
 
         TaskComment::create([
             'task_id' => $id,
-            'user_id' => '1',
+            'user_id' => auth()->user()->id,
             'comment' => $request->comment
         ]);
 
@@ -22,8 +22,7 @@ class TaskCommentController extends Controller
 
     public function destroy($id) {
         $comment = TaskComment::findOrFail($id);
-            $comment->delete();
-
+        $comment->delete();
 
         // if ($comment->user_id == auth()->id() || auth()->user()->role == 'admin') {
         //     $comment->delete();
