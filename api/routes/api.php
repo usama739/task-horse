@@ -18,14 +18,26 @@ Route::get('/user', function (Request $request) {
 Route::post('/webhooks', [ClerkWebhookController::class, 'handle']);
 
 
-// ------------------  Protected routes via clerk Token from frontend — just like Sanctum  ------------------ //
-Route::middleware('verify.clerk')->group(function() {
+// ------------------  Protected routes via clerk Token from frontend (just like Sanctum) and role-based authorization ------------------ //
+Route::middleware(['verify.clerk', 'role:admin,member'])->group(function() {
     Route::get('/me', function () {
         return response()->json(auth()->user());   
     });
 
-    Route::post('/organizations', [OrganizationController::class, 'store']);
     Route::get('/users/{clerk_id}', [UserController::class, 'findByClerkId']);
+
+    Route::get('/tasks', [TaskController::class, 'index'])->name('tasks.index');
+    Route::post('/tasks', [TaskController::class, 'store'])->name('tasks.store');
+    Route::put('/tasks/{task}', [TaskController::class, 'update'])->name('tasks.update');
+    Route::delete('/tasks/{task}', [TaskController::class, 'destroy'])->name('tasks.destroy');
+    Route::get('/tasks/{id}', [TaskController::class, 'show'])->name('tasks.show');
+ 
+    Route::post('/tasks/{id}/comments', [TaskCommentController::class, 'store'])->name('comments.store');
+});
+
+
+Route::middleware(['verify.clerk', 'role:admin'])->group(function() {
+    Route::post('/organizations', [OrganizationController::class, 'store']);
 
     Route::get('/dashboard/task-status-trend', [DashboardController::class, 'taskStatusTrend']);
     Route::get('/dashboard/completed-tasks-by-user', [DashboardController::class, 'completedTasksByUser']);
@@ -44,12 +56,6 @@ Route::middleware('verify.clerk')->group(function() {
     Route::put('/projects/{id}', [ProjectController::class, 'update'])->name('projects.update');
     Route::delete('/projects/{id}', [ProjectController::class, 'destroy'])->name('projects.destroy');
 
-    Route::get('/tasks', [TaskController::class, 'index'])->name('tasks.index');
-    Route::post('/tasks', [TaskController::class, 'store'])->name('tasks.store');
-    Route::put('/tasks/{task}', [TaskController::class, 'update'])->name('tasks.update');
-    Route::delete('/tasks/{task}', [TaskController::class, 'destroy'])->name('tasks.destroy');
-    Route::get('/tasks/{id}', [TaskController::class, 'show'])->name('tasks.show');
-
-    Route::post('/tasks/{id}/comments', [TaskCommentController::class, 'store'])->name('comments.store');
+    
     Route::delete('/comments/{id}', [TaskCommentController::class, 'destroy'])->name('comments.destroy');
 });
