@@ -300,7 +300,7 @@ const TasksPage: React.FC = () => {
         transition={{ delay: 0 }} 
         className="grid grid-cols-1 md:grid-cols-3 gap-6" style={{ marginBottom: '130px' }}>
         <div className="card border-l-4 border-yellow-600 bg-[#161f30] shadow-md rounded-lg p-6 flex flex-col items-center">
-          <h5 className="flex items-center gap-2 text-yellow-300 font-medium mb-2">
+          <h5 className="flex items-center gap-2 text-yellow-300 font-medium mb-1">
             <i className="fas fa-hourglass-half text-yellow-400 fa-2x" /> Pending
           </h5>
           <h3 className="text-3xl font-bold">
@@ -308,7 +308,7 @@ const TasksPage: React.FC = () => {
           </h3>
         </div>
         <div className="card border-l-4 border-blue-600 shadow-md bg-[#161f30] rounded-lg p-6 flex flex-col items-center">
-          <h5 className="flex items-center gap-2 text-blue-300 font-medium">
+          <h5 className="flex items-center gap-2 text-blue-300 font-medium mb-1">
             <i className="fas fa-spinner text-blue-400 fa-2x" /> In-Progress
           </h5>
           <h3 className="text-3xl font-bold">
@@ -316,7 +316,7 @@ const TasksPage: React.FC = () => {
           </h3>
         </div>
         <div className="card border-l-4 border-green-600 bg-[#161f30] shadow-md rounded-lg p-6 flex flex-col items-center">
-          <h5 className="flex items-center gap-2 text-green-300 font-medium">
+          <h5 className="flex items-center gap-2 text-green-300 font-medium mb-1">
             <i className="fas fa-check-circle text-green-400 fa-2x" /> Completed
           </h5>
           <h3 className="text-3xl font-bold">

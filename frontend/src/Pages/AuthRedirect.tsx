@@ -24,7 +24,7 @@ const AuthRedirect = () => {
             },
           });
           const hasOrg = res.data.organization_id !== null;
-          console.log("Member = ",isMember());
+          
           if(isMember()){
               navigate("/tasks");
           } else {

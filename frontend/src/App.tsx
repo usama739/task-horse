@@ -13,7 +13,6 @@ import AuthRedirect from './Pages/AuthRedirect';
 import { fetchLaravelUser } from './Hooks/fetchLaravelUser';
 import { useUserStore } from './store/userStore';
 
-
 function App() {
   fetchLaravelUser();           /// save athenticated user in zustand store when app loads (after signUp/signIn)
 
@@ -28,7 +27,6 @@ function App() {
       <SignedIn>
         <AuthRedirect />
         <Routes>
-          {/* <Route path="/" element={<Home />} /> */}
           <Route path="/create-organization"
             element={
               <SignedIn>
@@ -38,7 +36,6 @@ function App() {
           />
           <Route path="/projects" element={<Projects />} />
           <Route path="/team-members" element={<TeamMembers />} />
-          <Route path="/tasks" element={<Tasks />} />
           <Route path="/tasks" element={<Tasks />} />
           <Route path="/task/:id" element={<ViewTask />} />
           <Route path="/dashboard" element={<Dashboard />} />

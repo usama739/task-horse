@@ -4,6 +4,7 @@ import { useParams, Link } from 'react-router-dom';
 import Header from '../Components/Header';
 import { motion } from 'framer-motion';
 import { useAuth } from "@clerk/clerk-react";
+import { useUserStore } from '../store/userStore';
 
 interface User {
   id: number;
@@ -30,6 +31,7 @@ interface Task {
 }
 
 const TaskDetail: React.FC = () => {
+  const isAdmin = useUserStore((state) => state.isAdmin);
   const { getToken } = useAuth();
   const { id } = useParams();
   const [task, setTask] = useState<Task | null>(null);
@@ -134,14 +136,14 @@ const TaskDetail: React.FC = () => {
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-3">
                   <div>
                       <span className="block text-gray-400 font-medium mb-1">Priority:</span>
-                      <span className={`inline-block rounded px-2 py-1 text-xs font-semibold bg-opacity-20 text-white bg-${getPriorityColor(task.priority)}-500`}>
+                      <span className={`inline-block rounded px-2 py-1 text-xs font-semibold bg-opacity-20 text-white bg-${getPriorityColor(task.priority)}-600`}>
                       {task.priority}
                       </span>
                   </div>
 
                   <div>
                       <span className="block text-gray-400 font-medium mb-1">Status:</span>
-                      <span className={`inline-block rounded px-2 py-1 text-xs font-semibold bg-opacity-20 text-white bg-${getStatusColor(task.status)}-500`}>
+                      <span className={`inline-block rounded px-2 py-1 text-xs font-semibold bg-opacity-20 text-white bg-${getStatusColor(task.status)}-600`}>
                       {task.status}
                       </span>
                   </div>
@@ -171,7 +173,7 @@ const TaskDetail: React.FC = () => {
                     <span className="text-xs text-gray-400 ml-2">{new Date(comment.created_at).toLocaleString()}</span>
                     <p className="text-gray-200 mt-2">{comment.comment}</p>
                     </div>
-                    {task.user?.role !== 'user' && (
+                    {isAdmin() && (
                     <div className="relative">
                         <button
                         className="text-gray-400 hover:text-red-500 px-2 py-1 rounded focus:outline-none"
