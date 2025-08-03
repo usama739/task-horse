@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import type { FC, FormEvent } from "react";
 import Header from '../Components/Header'
 import axios from '../axios'; 
 import Swal from 'sweetalert2'

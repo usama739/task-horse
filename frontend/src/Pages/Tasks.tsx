@@ -1,4 +1,4 @@
-import React, { useEffect, useState, type FormEvent, type ChangeEvent } from "react";
+import React, { useEffect, useState, type ChangeEvent } from "react";
 import axios from "../axios";
 import Header from "../Components/Header";
 import FullCalendar from '@fullcalendar/react';
@@ -481,9 +481,7 @@ const TasksPage: React.FC = () => {
                 id: String(task.id),
               };
             })}
-            eventClick={(info) => {
-              // alert(`Task: ${info.event.title}\nDue Date: ${info.event.start?.toISOString().split('T')[0]}`);
-            }}
+            
           />
         </div>
 
