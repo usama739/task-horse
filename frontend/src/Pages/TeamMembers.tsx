@@ -3,7 +3,7 @@ import Header from '../Components/Header';
 import axios from '../axios'; 
 import Swal from 'sweetalert2';
 import { motion } from 'framer-motion';
-import { useUser, useAuth } from "@clerk/clerk-react";
+import { useAuth } from "@clerk/clerk-react";
 
 interface TeamMember {
   id: number;
@@ -13,7 +13,6 @@ interface TeamMember {
 
 const TeamMembers: React.FC = () => {
   const { getToken } = useAuth();
-  const { user } = useUser();
   const [isLoading, setIsLoading] = useState(true);
   const [members, setMembers] = useState<TeamMember[]>([]);
   const [modalOpen, setModalOpen] = useState(false);
@@ -102,7 +101,7 @@ const TeamMembers: React.FC = () => {
     if (!token) return;
 
     try {
-      const res: any = await axios[method](url, currentMember, {
+      await axios[method](url, currentMember, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
