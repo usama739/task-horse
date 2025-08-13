@@ -57,7 +57,7 @@ services:
     ports:
       - "80:80"                         # public entry point
     volumes:
-      - ./nginx/taskhorse.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
     depends_on:
       - react-frontend
       - laravel-api
