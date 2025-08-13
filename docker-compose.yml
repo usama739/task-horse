@@ -4,7 +4,7 @@ services:
   mysql-db:
     image: mysql:8.0
     container_name: mysql-db
-    restart: always
+    restart: unless-stopped
     environment:
       MYSQL_DATABASE: task_horse
       MYSQL_USER: usama
@@ -21,8 +21,8 @@ services:
     build:
       context: ./api
       dockerfile: Dockerfile
-    container_name: laravel-api
-    restart: always
+    container_name: taskhorse-api
+    restart: unless-stopped
     environment:
       DB_CONNECTION: mysql
       DB_HOST: mysql-db
@@ -31,7 +31,7 @@ services:
       DB_USERNAME: usama
       DB_PASSWORD: secret123
     ports:
-      - "8000:8000"
+      - "8000"                           # internal-only; no public port
     depends_on:
       - mysql-db
     networks:
@@ -41,11 +41,25 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile
-    container_name: react-frontend
-    restart: always
+    container_name: taskhorse-frontend
+    restart: unless-stopped
     ports:
-      - "3000:3000"
+      - "3000"                              # internal-only; no public port
     depends_on:
+      - laravel-api
+    networks:
+      - app_network
+
+  nginx:
+    image: nginx:alpine
+    container_name: taskhorse-nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"                         # public entry point
+    volumes:
+      - ./nginx/taskhorse.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      - react-frontend
       - laravel-api
     networks:
       - app_network
