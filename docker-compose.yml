@@ -1,0 +1,57 @@
+version: '3.8'
+
+services:
+  mysql-db:
+    image: mysql:8.0
+    container_name: mysql-db
+    restart: always
+    environment:
+      MYSQL_DATABASE: task_horse
+      MYSQL_USER: usama
+      MYSQL_PASSWORD: secret123
+      MYSQL_ROOT_PASSWORD: rootpassword
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - app_network
+
+  laravel-api:
+    build:
+      context: ./api
+      dockerfile: Dockerfile
+    container_name: laravel-api
+    restart: always
+    environment:
+      DB_CONNECTION: mysql
+      DB_HOST: mysql-db
+      DB_PORT: 3306
+      DB_DATABASE: task_horse
+      DB_USERNAME: usama
+      DB_PASSWORD: secret123
+    ports:
+      - "8000:8000"
+    depends_on:
+      - mysql-db
+    networks:
+      - app_network
+
+  react-frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: react-frontend
+    restart: always
+    ports:
+      - "3000:3000"
+    depends_on:
+      - laravel-api
+    networks:
+      - app_network
+
+volumes:
+  mysql_data:
+
+networks:
+  app_network:
