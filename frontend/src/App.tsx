@@ -20,7 +20,7 @@ function App() {
   console.log("User Stored in Zustand: ", user);
   
   return (
-     <Router>
+     <Router basename="/taskhorse">
       <Routes>
         <Route path="/" element={<Home />} />
       </Routes>
