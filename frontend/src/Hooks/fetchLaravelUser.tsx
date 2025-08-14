@@ -14,13 +14,17 @@ export const fetchLaravelUser = () => {
       const token = await getToken();
       if (!token) return;
       
-      const res: any = await axios.get('/me', {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      try {
+         const res: any = await axios.get('/me', {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
 
-      setUser(res.data);            // set user info
+        setUser(res.data); 
+      } catch (error) {
+        console.error('Error fetching user:', error);
+      }
     };
     
 
