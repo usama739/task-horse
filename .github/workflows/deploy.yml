@@ -21,11 +21,17 @@ jobs:
       uses: shivammathur/setup-php@v2
       with:
         php-version: '8.2'
+        
     - name: Install Composer Dependencies
+      working-directory: ./api
       run: composer install --prefer-dist --no-progress --no-suggest
+      
     - name: Run Laravel Pint (Linter)
+      working-directory: ./api
       run: vendor/bin/pint --test
+      
     - name: Run PHPStan (Static Analysis)
+      working-directory: ./api
       run: vendor/bin/phpstan analyse --memory-limit=1G
     
     
