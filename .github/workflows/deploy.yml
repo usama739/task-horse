@@ -28,11 +28,11 @@ jobs:
       
     - name: Run Laravel Pint (Linter)
       working-directory: ./api
-      run: vendor/bin/pint --test
+      run: composer require laravel/pint --dev && vendor/bin/pint --test
       
     - name: Run PHPStan (Static Analysis)
       working-directory: ./api
-      run: vendor/bin/phpstan analyse --memory-limit=1G
+      run: composer require --dev phpstan/phpstan && vendor/bin/phpstan analyse --memory-limit=1G
     
     
     # Node (React) checks
