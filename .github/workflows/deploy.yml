@@ -1,0 +1,42 @@
+name: TaskHorse CI/CD Pipeline
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  # ------------------------------
+  # 1. Lint & Code Quality Checks
+  # ------------------------------
+  quality-tests:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v4
+
+    # PHP (Laravel) checks
+    - name: Setup PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: '8.2'
+    - name: Install Composer Dependencies
+      run: composer install --prefer-dist --no-progress --no-suggest
+    - name: Run Laravel Pint (Linter)
+      run: vendor/bin/pint --test
+    - name: Run PHPStan (Static Analysis)
+      run: vendor/bin/phpstan analyse --memory-limit=1G
+    
+    
+    # Node (React) checks
+    - name: Setup Node
+      uses: actions/setup-node@v4
+      with:
+        node-version: 20
+    - name: Install Node Dependencies
+      run: npm install --legacy-peer-deps --prefix frontend
+    - name: Run ESLint
+      run: npm run lint --prefix frontend
+    - name: Run TypeScript Build Check
+      run: npm run build --prefix frontend --dry-run
