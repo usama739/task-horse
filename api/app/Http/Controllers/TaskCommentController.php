@@ -7,20 +7,21 @@ use Illuminate\Http\Request;
 
 class TaskCommentController extends Controller
 {
-    public function store(Request $request, $id){
+    public function store(Request $request, $id)
+    {
         $request->validate(['comment' => 'required']);
 
         TaskComment::create([
             'task_id' => $id,
             'user_id' => auth()->user()->id,
-            'comment' => $request->comment
+            'comment' => $request->comment,
         ]);
 
         return response()->json(['message' => 'Comment added successfully.'], 201);
     }
 
-
-    public function destroy($id) {
+    public function destroy($id)
+    {
         $comment = TaskComment::findOrFail($id);
         $comment->delete();
 

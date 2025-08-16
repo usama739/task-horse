@@ -1,9 +1,6 @@
 <?php
 
 namespace App\Models;
-use App\Models\Task;
-use App\Models\Project;
-use App\Models\Organization;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -52,16 +49,18 @@ class User extends Authenticatable
         ];
     }
 
-    public function tasks(){
+    public function tasks()
+    {
         return $this->hasMany(Task::class);
     }
 
-    public function projects(){
+    public function projects()
+    {
         return $this->hasMany(Project::class);
     }
 
-    public function organization(){
+    public function organization()
+    {
         return $this->belongsTo(Organization::class);
     }
-
 }

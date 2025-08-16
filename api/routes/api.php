@@ -1,15 +1,14 @@
 <?php
 
+use App\Http\Controllers\ClerkWebhookController;
+use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\OrganizationController;
+use App\Http\Controllers\ProjectController;
+use App\Http\Controllers\TaskCommentController;
+use App\Http\Controllers\TaskController;
+use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\UserController;
-use App\Http\Controllers\ProjectController;
-use App\Http\Controllers\TaskController;
-use App\Http\Controllers\TaskCommentController;
-use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\ClerkWebhookController;
-use App\Http\Controllers\OrganizationController;
-use App\Http\Middleware\VerifyClerkToken;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -17,11 +16,10 @@ Route::get('/user', function (Request $request) {
 
 Route::post('/webhooks', [ClerkWebhookController::class, 'handle']);
 
-
 // ------------------  Protected routes via clerk Token from frontend (just like Sanctum) and role-based authorization ------------------ //
-Route::middleware(['verify.clerk', 'role:admin,member'])->group(function() {
+Route::middleware(['verify.clerk', 'role:admin,member'])->group(function () {
     Route::get('/me', function () {
-        return response()->json(auth()->user());   
+        return response()->json(auth()->user());
     });
 
     Route::get('/users/{clerk_id}', [UserController::class, 'findByClerkId']);
@@ -31,12 +29,11 @@ Route::middleware(['verify.clerk', 'role:admin,member'])->group(function() {
     Route::put('/tasks/{task}', [TaskController::class, 'update'])->name('tasks.update');
     Route::delete('/tasks/{task}', [TaskController::class, 'destroy'])->name('tasks.destroy');
     Route::get('/tasks/{id}', [TaskController::class, 'show'])->name('tasks.show');
- 
+
     Route::post('/tasks/{id}/comments', [TaskCommentController::class, 'store'])->name('comments.store');
 });
 
-
-Route::middleware(['verify.clerk', 'role:admin'])->group(function() {
+Route::middleware(['verify.clerk', 'role:admin'])->group(function () {
     Route::post('/organizations', [OrganizationController::class, 'store']);
 
     Route::get('/dashboard/task-status-trend', [DashboardController::class, 'taskStatusTrend']);
@@ -56,6 +53,5 @@ Route::middleware(['verify.clerk', 'role:admin'])->group(function() {
     Route::put('/projects/{id}', [ProjectController::class, 'update'])->name('projects.update');
     Route::delete('/projects/{id}', [ProjectController::class, 'destroy'])->name('projects.destroy');
 
-    
     Route::delete('/comments/{id}', [TaskCommentController::class, 'destroy'])->name('comments.destroy');
 });

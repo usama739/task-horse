@@ -2,11 +2,11 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\User;
 use Closure;
-use Illuminate\Http\Request;
 use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
-use App\Models\User;
+use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 class VerifyClerkToken
@@ -19,23 +19,28 @@ class VerifyClerkToken
     public function handle(Request $request, Closure $next): Response
     {
         $token = $request->bearerToken();
-        if (!$token) {
+        if (! $token) {
             return response()->json(['error' => 'Missing token'], 401);
         }
 
         try {
-            $payload = (array) JWT::decode($token, new Key(env('CLERK_PEM_PUBLIC_KEY'), 'RS256'));
+            $rawKeyBase64 = config('services.clerk.pem_public_key_base64');
+            // Decode from base64 to get the original PEM content
+            $publicKey = base64_decode($rawKeyBase64);
+            $publicKey = str_replace("\r\n", "\n", $publicKey);
+            $payload = (array) JWT::decode($token, new Key($publicKey, 'RS256'));
             $clerkId = $payload['sub'];
         } catch (\Exception $e) {
-            return response()->json(['error' => 'Invalid token: ' . $e->getMessage()], 401);
+            return response()->json(['error' => 'Invalid token: '.$e->getMessage()], 401);
         }
 
         $user = User::where('clerk_id', $clerkId)->first();
-        if (!$user) {
+        if (! $user) {
             return response()->json(['error' => 'User not found'], 404);
         }
 
         auth()->login($user);       // sets the Laravel auth user
+
         return $next($request);
     }
 }

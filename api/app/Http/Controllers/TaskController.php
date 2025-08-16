@@ -2,13 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use App\Models\Task;
-use App\Models\Project;
-use App\Models\User;
 use App\Jobs\UploadTaskFileJob;
+use App\Models\Project;
+use App\Models\Task;
+use App\Models\User;
+use Illuminate\Http\Request;
 
-class TaskController extends Controller {
+class TaskController extends Controller
+{
     // public function getEvents() {
     //     if (auth()->user()->can('user')) {
     //         $tasks = Task::where('user_id', auth()->id())->whereNotNull('due_date')->get();
@@ -20,36 +21,38 @@ class TaskController extends Controller {
 
     //     $events = [];
     //     foreach ($tasks as $task) {
-    //         $priorityClass = $task->priority == 'High' ? 'fc-event-high' 
-    //                    : ($task->priority == 'Medium' ? 'fc-event-medium' 
+    //         $priorityClass = $task->priority == 'High' ? 'fc-event-high'
+    //                    : ($task->priority == 'Medium' ? 'fc-event-medium'
     //                    : 'fc-event-low');
     //         $events[] = [
     //             'title' => $task->title,
     //             'start' => $task->due_date, // Use due_date as event date
-    //             'classNames' => [$priorityClass], 
+    //             'classNames' => [$priorityClass],
     //         ];
     //     }
-    
+
     //     return response()->json($events);
     // }
 
-    public function index() {
+    public function index()
+    {
         $query = Task::query();
-        if(auth()->user()->role == 'member'){
+        if (auth()->user()->role == 'member') {
             $query->where('user_id', auth()->user()->id);
         }
-        
-        //get all tasks with project and user name
+
+        // get all tasks with project and user name
         $tasks = $query->with(['project', 'user'])
-        ->whereHas('project', function($query) { 
-            $query->where('organization_id', auth()->user()->organization_id); 
-        })
-        ->orderBy('due_date', 'asc')->get();
+            ->whereHas('project', function ($query) {
+                $query->where('organization_id', auth()->user()->organization_id);
+            })
+            ->orderBy('due_date', 'asc')->get();
+
         return response()->json($tasks);
     }
 
-
-    public function store(Request $request) {
+    public function store(Request $request)
+    {
         // if (auth()->user()->role == 'user') {
         //     return response()->json(['error' => 'Unauthorized'], 403);
         // }
@@ -65,7 +68,7 @@ class TaskController extends Controller {
         // ]);
 
         $task = Task::create($request->all());
-       
+
         // Handle multiple file uploads via queue
         if ($request->hasFile('attachments')) {
             foreach ($request->file('attachments') as $file) {
@@ -77,9 +80,9 @@ class TaskController extends Controller {
 
         return response()->json(['success' => 'Task added successfully.'], 201);
     }
-    
 
-    public function update(Request $request, Task $task) {
+    public function update(Request $request, Task $task)
+    {
         // if (auth()->user()->role == 'user') {
         //     return response()->json(['error' => 'Unauthorized'], 403);
         // }
@@ -95,27 +98,27 @@ class TaskController extends Controller {
         // ]);
 
         $task->update($request->all());
+
         return response()->json(['success' => 'Task updated successfully.'], 200);
         // return redirect()->route('tasks.index')->with('success', 'Task updated successfully.');
     }
 
-
-    public function destroy(Task $task) {
+    public function destroy(Task $task)
+    {
         // if (auth()->user()->role == 'user') {
         //     return response()->json(['error' => 'Unauthorized'], 403);
         // }
-        
+
         $task->delete();
+
         return response()->json(['success' => 'Task deleted successfully.'], 200);
         // return redirect()->route('tasks.index')->with('success', 'Task deleted successfully.');
     }
 
-
-    public function show($id) {
+    public function show($id)
+    {
         $task = Task::with('comments.user')->findOrFail($id);           // there is also relaton between comments ans user
+
         return response()->json($task);
     }
-
-
-   
 }

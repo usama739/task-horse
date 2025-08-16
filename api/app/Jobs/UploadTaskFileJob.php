@@ -2,20 +2,22 @@
 
 namespace App\Jobs;
 
-use Illuminate\Support\Facades\Log;
+use App\Models\TaskFile;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
-use App\Models\TaskFile;
 
 class UploadTaskFileJob implements ShouldQueue
 {
     use InteractsWithQueue, Queueable, SerializesModels;
 
     protected $file;
+
     protected $taskId;
+
     protected $uploadedBy;
 
     /**
@@ -36,12 +38,13 @@ class UploadTaskFileJob implements ShouldQueue
         $fileContents = Storage::disk('local')->get($this->file);
         $filename = basename($this->file);
 
-        $s3Path = 'tasks/' . $this->taskId . '/' . $filename;
+        $s3Path = 'tasks/'.$this->taskId.'/'.$filename;
         try {
             Storage::disk('s3')->put($s3Path, $fileContents);
         } catch (Exception $e) {
             // dd('S3 upload failed: ' . $e->getMessage());
-            Log::error('S3 upload failed: ' . $e->getMessage());
+            Log::error('S3 upload failed: '.$e->getMessage());
+
             return;
         }
 

@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('title');
             $table->text('description')->nullable();
             $table->string('status')->default('pending'); // pending, in-progress, completed
-            $table->string('priority')->default('Medium'); 
+            $table->string('priority')->default('Medium');
             $table->unsignedBigInteger('project_id')->nullable(); // Foreign key to projects
             $table->unsignedBigInteger('user_id'); // Foreign key to user (assigned to)
             $table->date('due_date');

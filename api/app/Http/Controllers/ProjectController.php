@@ -2,30 +2,32 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\Project;
+use Illuminate\Http\Request;
 
 class ProjectController extends Controller
 {
-    public function index(){
+    public function index()
+    {
         // if (auth()->user()->role !== 'admin') {
         //     abort(403, 'Unauthorized access.');
         // }
 
-        $projects = Project::where('organization_id', auth()->user()->organization_id)->orderBy('created_at', 'desc')->get();;
+        $projects = Project::where('organization_id', auth()->user()->organization_id)->orderBy('created_at', 'desc')->get();
+
         return response()->json($projects);
     }
 
-
-    public function store(Request $request){
+    public function store(Request $request)
+    {
         $request->validate(['name' => 'required|string|max:255']);
         Project::create(['name' => $request->name, 'organization_id' => auth()->user()->organization_id]);
 
         return response()->json(['success' => 'Project added successfully'], 201);
     }
 
-
-    public function update(Request $request, $id){
+    public function update(Request $request, $id)
+    {
         $request->validate(['name' => 'required|string|max:255']);
         $Project = Project::findOrFail($id);
         $Project->update(['name' => $request->name]);
@@ -33,8 +35,8 @@ class ProjectController extends Controller
         return response()->json(['success' => 'Project updated successfully']);
     }
 
-    
-    public function destroy($id){
+    public function destroy($id)
+    {
         $Project = Project::findOrFail($id);
         $Project->delete();
 

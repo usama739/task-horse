@@ -2,17 +2,18 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\User;
+use Illuminate\Http\Request;
 
 class ClerkWebhookController extends Controller
 {
-    public function handle(Request $request){
+    public function handle(Request $request)
+    {
 
         try {
             $event = $request->get('type');
 
-            if($event === 'user.created'){
+            if ($event === 'user.created') {
 
                 $data = $request->get('data');
 
@@ -25,10 +26,10 @@ class ClerkWebhookController extends Controller
 
                 // This should only be triggered when an Admin signs up
                 User::create([
-                    'name'       => $data['first_name'] . ' ' . $data['last_name'],
-                    'email'      => $data['email_addresses'][0]['email_address'],
-                    'clerk_id'   => $data['id'],
-                    'role'       => 'admin',           
+                    'name' => $data['first_name'].' '.$data['last_name'],
+                    'email' => $data['email_addresses'][0]['email_address'],
+                    'clerk_id' => $data['id'],
+                    'role' => 'admin',
                 ]);
             }
 
@@ -37,6 +38,6 @@ class ClerkWebhookController extends Controller
         } catch (\Throwable $e) {
             return response()->json(['error' => $e->getMessage()], 500);
         }
-        
+
     }
 }

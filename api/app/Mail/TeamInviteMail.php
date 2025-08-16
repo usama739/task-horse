@@ -21,9 +21,9 @@ class TeamInviteMail extends Mailable
     public function build()
     {
         return $this->subject('You’ve been added to the team!')
-                    ->view('emails.team_invite')
-                    ->with([
-                        'user' => $this->user
-                    ]);
+            ->view('emails.team_invite')
+            ->with([
+                'user' => $this->user,
+            ]);
     }
 }
