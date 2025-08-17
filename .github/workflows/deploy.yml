@@ -32,9 +32,9 @@ jobs:
       
     - name: Run PHPStan (Static Analysis)
       working-directory: ./api
-      run: composer require --dev phpstan/phpstan && vendor/bin/phpstan analyse --memory-limit=1G
-    
-    
+      run: composer require --dev phpstan/phpstan && vendor/bin/phpstan analyse app/ routes/ tests/ --memory-limit=1G
+
+
     # Node (React) checks
     - name: Setup Node
       uses: actions/setup-node@v4
