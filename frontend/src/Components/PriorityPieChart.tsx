@@ -15,8 +15,13 @@ interface PieChartProps {
   status?: string;
 }
 
+interface PriorityDataProp {
+  priority: string;
+  count: number;
+}
+
 const PriorityPieChart: React.FC<PieChartProps> = ({ startDate, endDate, projectId, status }) => {
-  const [priorityData, setPriorityData] = useState<{ priority: string; count: number }[]>([]);
+  const [priorityData, setPriorityData] = useState<PriorityDataProp[]>([]);
   const [loading, setLoading] = useState(true);
   const { getToken } = useAuth();
 
@@ -26,7 +31,7 @@ const PriorityPieChart: React.FC<PieChartProps> = ({ startDate, endDate, project
       const token = await getToken();
       if (!token) return;
 
-      axios.get<any>('/dashboard/tasks-by-priority', {
+      axios.get<PriorityDataProp[]>('/dashboard/tasks-by-priority', {
         params: {
           start_date: startDate ? dayjs(startDate).format("YYYY-MM-DD") : undefined,
           end_date: endDate ? dayjs(endDate).format("YYYY-MM-DD") : undefined,

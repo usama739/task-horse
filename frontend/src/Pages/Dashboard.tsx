@@ -22,6 +22,19 @@ interface Project {
   name: string;
 }
 
+interface OverviewCount {
+  users: number;
+  tasks: number;
+  projects: number;
+}
+
+
+interface PriorityCounts {
+  high: number;
+  medium: number;
+  low: number;
+}
+
 const Dashboard: React.FC = () => {
   const { getToken } = useAuth();
   const [projectId, setProjectId] = useState('');
@@ -29,8 +42,8 @@ const Dashboard: React.FC = () => {
   const [startDate, setStartDate] = React.useState<Date | undefined>(undefined)
   const [endDate, setEndDate] = React.useState<Date | undefined>(undefined)
 
-  const [priorityCounts, setPriorityCounts] = useState({ high: 0, medium: 0, low: 0 });
-  const [overview, setOverview] = useState({ users: 0, tasks: 0, projects: 0 });
+  const [priorityCounts, setPriorityCounts] = useState<PriorityCounts>({ high: 0, medium: 0, low: 0 });
+  const [overview, setOverview] = useState<OverviewCount>({ users: 0, tasks: 0, projects: 0 });
   const [projects, setprojects] = useState<Project[]>([]);
   const [open, setOpen] = React.useState(false)
   const [openEnd, setOpenEnd] = React.useState(false)
@@ -63,7 +76,7 @@ const Dashboard: React.FC = () => {
       const token = await getToken();
       if (!token) return;
       try {
-        const res: any = await axios.get('/dashboard/overview-counts', {
+        const res = await axios.get<OverviewCount>('/dashboard/overview-counts', {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -87,7 +100,7 @@ const Dashboard: React.FC = () => {
       if (!token || !startDate || !endDate) return;
 
       try {
-        const response = await axios.get<any>('/dashboard/task-priority-counts', {
+        const response = await axios.get<PriorityCounts>('/dashboard/task-priority-counts', {
           params: {
             start_date: dayjs(startDate).format("YYYY-MM-DD"),
             end_date: dayjs(endDate).format("YYYY-MM-DD"),

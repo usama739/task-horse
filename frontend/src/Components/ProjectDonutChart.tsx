@@ -14,8 +14,13 @@ interface DonutChartProps {
   status?: string;
 }
 
+interface ProjectDataProp {
+  project: string;
+  count: number;
+}
+
 const ProjectDonutChart: React.FC<DonutChartProps> = ({ startDate, endDate, projectId, status }) => {
-  const [data, setData] = useState<{ project: string; count: number }[]>([]);
+  const [data, setData] = useState<ProjectDataProp[]>([]);
   const [loading, setLoading] = useState(true);
   const { getToken } = useAuth();
 
@@ -25,7 +30,7 @@ const ProjectDonutChart: React.FC<DonutChartProps> = ({ startDate, endDate, proj
       const token = await getToken();
       if (!token) return;
 
-      axios.get<any>('/dashboard/tasks-by-project', {
+      axios.get<ProjectDataProp[]>('/dashboard/tasks-by-project', {
         params: {
           start_date: startDate ? dayjs(startDate).format("YYYY-MM-DD") : undefined,
           end_date: endDate ? dayjs(endDate).format("YYYY-MM-DD") : undefined,

@@ -4,8 +4,15 @@ import { useAuth } from '@clerk/clerk-react';
 import axios from '../axios';
 import { useUserStore } from '../store/userStore';
 
+interface UserType {
+  id: number;
+  name: string;
+  email: string;
+  role: 'admin' | 'member';
+  organization_id: number | null;
+}
 
-export const fetchLaravelUser = () => {
+export const FetchLaravelUser = () => {
   const { getToken } = useAuth();
   const setUser = useUserStore((state) => state.setUser);
 
@@ -15,7 +22,7 @@ export const fetchLaravelUser = () => {
       if (!token) return;
       
       try {
-         const res: any = await axios.get('/me', {
+         const res = await axios.get<UserType>('/me', {
           headers: {
             Authorization: `Bearer ${token}`,
           },

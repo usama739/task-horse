@@ -90,12 +90,18 @@ function Projects() {
       setShowFormModal(false);
       fetchProjects();
       
-    } catch (error: any) {
-      Swal.fire({
-        icon: 'error',
-        title: 'Error',
-        text: error.response?.data?.message || 'Something went wrong',
-      });
+    } catch (error) {
+
+        let errorMessage = 'Something went wrong';
+        if (typeof error === 'object' && error !== null && 'response' in error) {
+          const err = error as { response?: { data?: { message?: string } } };
+          errorMessage = err.response?.data?.message || errorMessage;
+        }
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: errorMessage,
+        });
     }
   };
 
@@ -118,12 +124,19 @@ function Projects() {
       });
       setShowDeleteModal(false);
       fetchProjects();
-    } catch (error: any) {
-      Swal.fire({
-        icon: 'error',
-        title: 'Error',
-        text: error.response?.data?.message || 'Something went wrong',
-      });
+
+    } catch (error) {
+      
+        let errorMessage = 'Something went wrong';
+        if (typeof error === 'object' && error !== null && 'response' in error) {
+          const err = error as { response?: { data?: { message?: string } } };
+          errorMessage = err.response?.data?.message || errorMessage;
+        }
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: errorMessage,
+        });
     }
   };
 

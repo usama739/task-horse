@@ -3,6 +3,7 @@ import { Bar } from 'react-chartjs-2';
 import axios from '../axios'; 
 import dayjs from 'dayjs';
 import { Chart as ChartJS, BarElement, CategoryScale, LinearScale, Tooltip, Legend } from 'chart.js';
+import type { ChartData } from 'chart.js';
 import { useAuth } from '@clerk/clerk-react';
 
 ChartJS.register(BarElement, CategoryScale, LinearScale, Tooltip, Legend);
@@ -14,18 +15,24 @@ interface UserChartProps {
   status?: string;
 }
 
+interface UserData {
+  id: string;
+  name: string;
+  completed_tasks_count: number;
+}
+
+
 const TasksByUserChart: React.FC<UserChartProps> = ({ startDate, endDate, projectId, status }) => {
-  const [chartData, setChartData] = useState<any>(null);
+  const [chartData, setChartData] = useState<ChartData<'bar'> | null>(null);
   const { getToken } = useAuth();
 
   useEffect(() => {
     const fetchUserChart = async () => {
       const token = await getToken();
       if (!token) return;
-      
-      axios.get<any>('/dashboard/completed-tasks-by-user'
-          , {
-              params: {
+
+      axios.get<UserData[]>('/dashboard/completed-tasks-by-user', {
+          params: {
               start_date: startDate ? dayjs(startDate).format("YYYY-MM-DD") : undefined,
               end_date: endDate ? dayjs(endDate).format("YYYY-MM-DD") : undefined,
               project_id: projectId,
@@ -37,8 +44,8 @@ const TasksByUserChart: React.FC<UserChartProps> = ({ startDate, endDate, projec
           }
       ).then(res => {
         const users = res.data;
-        const labels = users.map((u: any) => u.name);
-        const data = users.map((u: any) => u.completed_tasks_count);
+        const labels = users.map((u) => u.name);
+        const data = users.map((u) => u.completed_tasks_count);
 
         setChartData({
           labels,

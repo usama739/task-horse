@@ -42,7 +42,7 @@ const TaskDetail: React.FC = () => {
     const fetchTask = async () => {
       const token = await getToken();
       if (!token) return;
-      const res: any = await axios.get(`/tasks/${id}`, {
+      const res = await axios.get<Task>(`/tasks/${id}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -54,11 +54,13 @@ const TaskDetail: React.FC = () => {
     fetchTask();
   }, [id]);
 
+
   const getPriorityColor = (priority: string) => {
     const p = priority.toLowerCase();
     return p === 'high' ? 'red' : p === 'medium' ? 'yellow' : 'green';
   };
 
+  
   const getStatusColor = (status: string) => {
     const s = status.toLowerCase();
     return s === 'completed' ? 'green' : s === 'in-progress' ? 'indigo' : 'yellow';
@@ -69,14 +71,14 @@ const TaskDetail: React.FC = () => {
     e.preventDefault();
     const token = await getToken();
     if (!token) return;
-    const response: any = await axios.post(`/tasks/${task?.id}/comments`, { comment }, {
+    const response = await axios.post(`/tasks/${task?.id}/comments`, { comment }, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
     });
     console.log(response.data);
     setComment('');
-    const res: any = await axios.get<Task[]>(`/tasks/${id}`, {
+    const res = await axios.get<Task>(`/tasks/${id}`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },

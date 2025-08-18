@@ -5,6 +5,14 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from '@clerk/clerk-react';
 import { useUserStore } from '../store/userStore';
 
+interface UserType {
+  id: number;
+  name: string;
+  email: string;
+  role: 'admin' | 'member';
+  organization_id: number | null;
+}
+
 const AuthRedirect = () => {
   const isMember = useUserStore((state) => state.isMember);
   const { getToken } = useAuth();
@@ -18,12 +26,13 @@ const AuthRedirect = () => {
 
       if (isSignedIn && user) {
         try {
-          const res: any = await axios.get(`/users/${user.id}`, {
+          const res = await axios.get<UserType>(`/users/${user.id}`, {
             headers: {
               Authorization: `Bearer ${token}`,
             },
           });
-          const hasOrg = res.data.organization_id !== null;
+          const userData: UserType = res.data;
+          const hasOrg = userData.organization_id !== null;
           
           if(isMember()){
               navigate("/tasks");

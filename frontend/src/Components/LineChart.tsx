@@ -11,6 +11,7 @@ import {
   Tooltip,
   Legend,
 } from 'chart.js';
+import type { ChartData } from 'chart.js';
 import dayjs from 'dayjs';
 import { useAuth } from '@clerk/clerk-react';
 
@@ -25,7 +26,7 @@ interface LineChartProps {
 
 const LineChart: React.FC<LineChartProps> = ({ startDate, endDate, projectId, status }) => {
   const { getToken } = useAuth();
-  const [chartData, setChartData] = useState<any>(null);
+  const [chartData, setChartData] = useState<ChartData<'line'> | null>(null);
 
   useEffect(() => {
     // console.log('Fetching data for LineChart', { startDate, endDate, projectId, status });

@@ -82,13 +82,20 @@ const TeamMembers: React.FC = () => {
       });
       setDeleteModalOpen(false);
       fetchMembers();
-    } catch (error: any) {
-      console.error('Error deleting team member:', error);
+   
+    } catch (error) {
+   
+      let errorMessage = 'Something went wrong';
+      if (typeof error === 'object' && error !== null && 'response' in error) {
+        const err = error as { response?: { data?: { message?: string } } };
+        errorMessage = err.response?.data?.message || errorMessage;
+      }
       Swal.fire({
         icon: 'error',
         title: 'Error',
-        text: error.response?.data?.message || 'Something went wrong',
+        text: errorMessage,
       });
+   
     } 
   };
 
@@ -114,13 +121,20 @@ const TeamMembers: React.FC = () => {
       });
       setModalOpen(false);
       fetchMembers();
-    } catch (error: any) {
-      console.error('Error submitting team member:', error);
+    
+    } catch (error) {
+    
+      let errorMessage = 'Something went wrong';
+      if (typeof error === 'object' && error !== null && 'response' in error) {
+        const err = error as { response?: { data?: { message?: string } } };
+        errorMessage = err.response?.data?.message || errorMessage;
+      }
       Swal.fire({
         icon: 'error',
         title: 'Error',
-        text: error.response?.data?.message || 'Something went wrong',
+        text: errorMessage,
       });
+    
     }
   };
 

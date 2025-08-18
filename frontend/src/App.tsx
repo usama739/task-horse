@@ -10,11 +10,11 @@ import CreateOrganization from './Pages/Organization';
 import { SignedIn, SignedOut, RedirectToSignIn } from '@clerk/clerk-react'
 import Dashboard from './Pages/Dashboard';
 import AuthRedirect from './Pages/AuthRedirect';
-import { fetchLaravelUser } from './Hooks/fetchLaravelUser';
+import { FetchLaravelUser } from './Hooks/fetchLaravelUser';
 import { useUserStore } from './store/userStore';
 
 function App() {
-  fetchLaravelUser();           /// save athenticated user in zustand store when app loads (after signUp/signIn)
+  FetchLaravelUser();           /// save athenticated user in zustand store when app loads (after signUp/signIn)
 
   const user = useUserStore((state) => state.user);
   console.log("User Stored in Zustand: ", user);

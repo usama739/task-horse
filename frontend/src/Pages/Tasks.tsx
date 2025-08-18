@@ -12,6 +12,16 @@ import CountUp from "react-countup";
 import { useAuth } from "@clerk/clerk-react";
 import { useUserStore } from '../store/userStore';
 
+interface Project {
+  id: string;
+  name: string;
+}
+
+interface TeamMember {
+  id: number;
+  name: string;
+  email: string;
+}
 
 interface Task {
   id: number;
@@ -23,6 +33,16 @@ interface Task {
   due_date?: string;  
   user?: { name: string };
   assignedTo?: string;
+}
+
+interface FormDataProps {
+  title: string;
+  description: string;
+  priority: "Low" | "Medium" | "High";
+  status: "Pending" | "In-Progress" | "Completed";
+  due_date: string;
+  project_id: string;
+  user_id: string;
 }
 
 const TasksPage: React.FC = () => {
@@ -41,18 +61,10 @@ const TasksPage: React.FC = () => {
   const [showModal, setShowModal] = useState(false);
   const [taskId, setTaskId] = useState<number | null>(null);
 
-  const [projects, setprojects] = useState([]);
-  const [users, setUsers] = useState([]);
+  const [projects, setprojects] = useState<Project[]>([]);
+  const [users, setUsers] = useState<TeamMember[]>([]);
   const [attachments, setAttachments] = useState<FileList | null>(null);
-  const [formData, setFormData] = useState({
-    title: '',
-    description: '',
-    priority: '',
-    status: '',
-    due_date: '',
-    project_id: '',
-    user_id: '',
-  });
+  const [formData, setFormData] = useState<FormDataProps | null>(null);
 
 
   // Fetch tasks and timeline tasks on mount
@@ -107,7 +119,7 @@ const TasksPage: React.FC = () => {
       if (taskId !== null) {
         const token = await getToken();
         if (!token) return;
-        axios.get<any>(`tasks/${taskId}`, {
+        axios.get<FormDataProps>(`tasks/${taskId}`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -124,21 +136,13 @@ const TasksPage: React.FC = () => {
 
   const openModal = async () => {
     setTaskId(null);
-    setFormData({
-      title: '',
-      description: '',
-      priority: '',
-      status: '',
-      due_date: '',
-      project_id: '',
-      user_id: '',
-    });
+    setFormData(null);
 
     const token = await getToken();
     console.log(token)
     if (!token) return;
 
-    axios.get<any>('/projects', {
+    axios.get<Project[]>('/projects', {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -146,7 +150,7 @@ const TasksPage: React.FC = () => {
       setprojects(res.data)
     );
 
-    axios.get<any>('/users', {
+    axios.get<TeamMember[]>('/users', {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -167,7 +171,7 @@ const TasksPage: React.FC = () => {
   const openEditModal = async (task: Task) => {
     const token = await getToken();
     if (!token) return;
-    axios.get<any>('/projects', {
+    axios.get<Project[]>('/projects', {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -175,7 +179,7 @@ const TasksPage: React.FC = () => {
       setprojects(res.data)
     );
 
-    axios.get<any>('/users', {
+    axios.get<TeamMember[]>('/users', {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -193,6 +197,7 @@ const TasksPage: React.FC = () => {
     const data = new FormData();
 
     // Append text fields
+    if (!formData) return;
     Object.entries(formData).forEach(([key, value]) => {
       data.append(key, value);
     });
@@ -215,12 +220,20 @@ const TasksPage: React.FC = () => {
             'Content-Type': 'multipart/form-data', 
             Authorization: `Bearer ${token}`, }
         });
-      } catch (error: any) {
+
+      } catch (error) {
+        
+        let errorMessage = 'Something went wrong';
+        if (typeof error === 'object' && error !== null && 'response' in error) {
+          const err = error as { response?: { data?: { message?: string } } };
+          errorMessage = err.response?.data?.message || errorMessage;
+        }
         Swal.fire({
           icon: 'error',
           title: 'Error',
-          text: error.response?.data?.message || 'Something went wrong',
+          text: errorMessage,
         });
+      
       }
     } else {
       try {
@@ -230,12 +243,20 @@ const TasksPage: React.FC = () => {
             Authorization: `Bearer ${token}`
           },
         });
-      } catch (error: any) {
+      
+      } catch (error) {
+        
+        let errorMessage = 'Something went wrong';
+        if (typeof error === 'object' && error !== null && 'response' in error) {
+          const err = error as { response?: { data?: { message?: string } } };
+          errorMessage = err.response?.data?.message || errorMessage;
+        }
         Swal.fire({
           icon: 'error',
           title: 'Error',
-          text: error.response?.data?.message || 'Something went wrong',
+          text: errorMessage,
         });
+      
       }
     }
 
@@ -251,7 +272,9 @@ const TasksPage: React.FC = () => {
 
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    if (formData) {
+      setFormData({ ...formData, [e.target.name]: e.target.value });
+    }
   };
 
 
@@ -278,12 +301,20 @@ const TasksPage: React.FC = () => {
       });
       setDeleteModalOpen(false);
       fetchTasks();
-    } catch (error: any) {
+    
+    } catch (error) {
+    
+      let errorMessage = 'Something went wrong';
+      if (typeof error === 'object' && error !== null && 'response' in error) {
+        const err = error as { response?: { data?: { message?: string } } };
+        errorMessage = err.response?.data?.message || errorMessage;
+      }
       Swal.fire({
         icon: 'error',
         title: 'Error',
-        text: error.response?.data?.message || 'Something went wrong',
+        text: errorMessage,
       });
+    
     }
   };
 
@@ -529,17 +560,17 @@ const TasksPage: React.FC = () => {
 
               <div>
                 <label className="block text-gray-400 mb-1">Title</label>
-                <input name="title" required value={formData.title} onChange={handleChange} className="w-full bg-[#1a2238] border border-gray-600 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 mb-2" />
+                <input name="title" required value={formData?.title} onChange={handleChange} className="w-full bg-[#1a2238] border border-gray-600 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 mb-2" />
               </div>
               
               <div>
                 <label className="block text-gray-400 mb-1">Description</label>
-                <textarea name="description" value={formData.description} onChange={handleChange} className="w-full bg-[#1a2238] border border-gray-600 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 mb-2" />
+                <textarea name="description" value={formData?.description} onChange={handleChange} className="w-full bg-[#1a2238] border border-gray-600 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 mb-2" />
               </div>
 
               <div>
                 <label className="block text-gray-400 mb-1">Priority</label>
-                <select name="priority" value={formData.priority} onChange={handleChange} className="w-full bg-[#1a2238] p-2 rounded-lg border border-gray-600 mb-2">
+                <select name="priority" value={formData?.priority} onChange={handleChange} className="w-full bg-[#1a2238] p-2 rounded-lg border border-gray-600 mb-2">
                   <option value="">Select Priority</option>
                   <option value="Low">Low</option>
                   <option value="Medium">Medium</option>
@@ -549,7 +580,7 @@ const TasksPage: React.FC = () => {
 
               <div>
                 <label className="block text-gray-400 mb-1">Status</label>
-                <select name="status" value={formData.status} onChange={handleChange} className="w-full bg-[#1a2238] p-2 rounded-lg border border-gray-600 mb-2">
+                <select name="status" value={formData?.status} onChange={handleChange} className="w-full bg-[#1a2238] p-2 rounded-lg border border-gray-600 mb-2">
                   <option value="">Select Status</option>
                   <option value="Pending">Pending</option>
                   <option value="In-Progress">In Progress</option>
@@ -559,14 +590,14 @@ const TasksPage: React.FC = () => {
 
               <div>
                 <label className="block text-gray-400 mb-1">Due Date</label>
-                  <input type="date" name="due_date" value={formData.due_date} onChange={handleChange} className="w-full bg-[#1a2238] p-2 rounded-lg border border-gray-600 mb-2" />
+                  <input type="date" name="due_date" value={formData?.due_date} onChange={handleChange} className="w-full bg-[#1a2238] p-2 rounded-lg border border-gray-600 mb-2" />
               </div>
 
               <div>
                 <label className="block text-gray-400 mb-1">Project</label>
-                <select name="project_id" value={formData.project_id} onChange={handleChange} className="w-full bg-[#1a2238] p-2 rounded-lg border border-gray-600 mb-2">
+                <select name="project_id" value={formData?.project_id} onChange={handleChange} className="w-full bg-[#1a2238] p-2 rounded-lg border border-gray-600 mb-2">
                   <option value="">Select Project</option>
-                  {projects.map((cat: any) => (
+                  {projects.map((cat) => (
                     <option key={cat.id} value={cat.id}>{cat.name}</option>
                   ))}
                 </select>
@@ -574,9 +605,9 @@ const TasksPage: React.FC = () => {
 
               <div>
                 <label className="block text-gray-400 mb-1">Assign To</label>
-                <select name="user_id" value={formData.user_id} onChange={handleChange} className="w-full bg-[#1a2238] p-2 rounded-lg border border-gray-600 mb-2" required>
+                <select name="user_id" value={formData?.user_id} onChange={handleChange} className="w-full bg-[#1a2238] p-2 rounded-lg border border-gray-600 mb-2" required>
                   <option value="">Select User</option>
-                  {users.map((user: any) => (
+                  {users.map((user) => (
                     <option key={user.id} value={user.id}>{user.name}</option>
                   ))}
                 </select>
