@@ -24,7 +24,7 @@ services:
     environment:
       APP_NAME: Laravel
       APP_ENV: production
-      APP_KEY: base64:f22HGdYpjf5UnJOCrf457ytzT3/UjahYNSTaITisL/E=
+      APP_KEY: ${APP_KEY}
       APP_DEBUG: false
       APP_URL: ${APP_URL}
 
