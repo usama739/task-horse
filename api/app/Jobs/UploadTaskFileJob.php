@@ -2,8 +2,8 @@
 
 namespace App\Jobs;
 
-use Exception;
 use App\Models\TaskFile;
+use Exception;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Queue\InteractsWithQueue;
