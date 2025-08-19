@@ -24,7 +24,7 @@ const Header: FC<HeaderProps> = ({ isHome }) => {
       className={`${
         isHome
           ? "w-full px-6 py-4 flex justify-between items-center bg-gradient-to-r from-black via-blue-950 to-blue-700 shadow-lg"
-          : "bg-[#0e1525] py-3 fixed w-full z-20 top-0 start-0"
+          : "bg-[#0e1525] py-3 px-6 fixed w-full z-20 top-0 start-0"
       }`}
     >
       <div className="container mx-auto flex flex-wrap items-center justify-between">
