@@ -69,6 +69,7 @@ jobs:
         run: |
           ssh -o StrictHostKeyChecking=no root@139.59.32.89 "
             set -e
+            cd /var/www/taskhorse
             git fetch origin main
             git reset --hard origin/main
           "
