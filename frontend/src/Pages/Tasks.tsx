@@ -323,13 +323,13 @@ const TasksPage: React.FC = () => {
     <>
     <Header isHome={false} />
 
-    <div className="container mx-auto px-6 py-8 text-white" style={{ paddingTop : '130px' }}>
+    <div className="container mx-auto px-6 py-8 text-white" style={{ paddingTop : '160px' }}>
       {/* Cards */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0 }} 
-        className="grid grid-cols-1 md:grid-cols-3 gap-6" style={{ marginBottom: '130px' }}>
+        className="grid grid-cols-1 md:grid-cols-3 gap-6" style={{ marginBottom: '115px' }}>
         <div className="card border-l-4 border-yellow-600 bg-[#161f30] shadow-md rounded-lg p-6 flex flex-col items-center">
           <h5 className="flex items-center gap-2 text-yellow-300 font-medium mb-1">
             <i className="fas fa-hourglass-half text-yellow-400 fa-2x" /> Pending

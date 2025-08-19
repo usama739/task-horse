@@ -146,7 +146,7 @@ function Projects() {
     <Header isHome={false} />
 
 
-    <div className="container mx-auto px-6 py-8" style={{ paddingTop : '140px' }}>
+    <div className="container mx-auto px-6 py-8" style={{ paddingTop : '160px' }}>
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}

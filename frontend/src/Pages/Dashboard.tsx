@@ -126,7 +126,7 @@ const Dashboard: React.FC = () => {
     <>
       <Header isHome={false} /> 
       
-      <div className="container mx-auto px-4 pb-5" style={{ marginTop: '120px' }}>
+      <div className="container mx-auto px-4 pb-5" style={{ marginTop: '160px' }}>
         {/* Header and Filters */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}

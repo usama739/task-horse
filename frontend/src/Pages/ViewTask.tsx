@@ -108,7 +108,7 @@ const TaskDetail: React.FC = () => {
         <Header isHome={false} />
     
         {!task ? (
-            <div className="flex justify-center items-center py-8"  style={{ paddingTop : '140px' }}>
+            <div className="flex justify-center items-center py-8"  style={{ paddingTop : '160px' }}>
                 <div className="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
                 <span className="ml-2 text-gray-500">Loading...</span>
             </div>  
