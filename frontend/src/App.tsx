@@ -53,10 +53,10 @@ function App() {
       {/* Clerk redirect handler */}
       <AuthRedirect />
             
-      <SignedOut>
+      {/* <SignedOut>
         <RedirectToSignIn />
       </SignedOut>
-      
+       */}
     </Router>
   )
 }
