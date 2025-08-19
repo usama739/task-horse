@@ -23,10 +23,7 @@ function App() {
      <Router>
       <Routes>
         <Route path="/" element={<Home />} />
-      </Routes>
-      <SignedIn>
-        <AuthRedirect />
-        <Routes>
+      
           <Route path="/create-organization"
             element={
               <SignedIn>
@@ -34,15 +31,27 @@ function App() {
               </SignedIn>
             }
           />
-          <Route path="/projects" element={<Projects />} />
-          <Route path="/team-members" element={<TeamMembers />} />
-          <Route path="/tasks" element={<Tasks />} />
-          <Route path="/task/:id" element={<ViewTask />} />
-          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/projects" element={<SignedIn>
+            <Projects />
+          </SignedIn>} />
+          <Route path="/team-members" element={<SignedIn>
+            <TeamMembers />
+          </SignedIn>} />
+          <Route path="/tasks" element={<SignedIn>
+            <Tasks />
+          </SignedIn>} />
+          <Route path="/task/:id" element={<SignedIn>
+            <ViewTask />
+          </SignedIn>} />
+          <Route path="/dashboard" element={<SignedIn>
+            <Dashboard />
+          </SignedIn>} />
+
           <Route path="*" element={<NotFound />} />
         </Routes>
-      </SignedIn>
 
+      {/* Clerk redirect handler */}
+      <AuthRedirect />
             
       <SignedOut>
         <RedirectToSignIn />

@@ -1,23 +1,25 @@
-import type { FC } from "react";
+import { type FC, useState } from "react";
 import { Link } from "react-router-dom";
-import { SignedIn, SignedOut,SignInButton, SignUpButton, UserButton } from '@clerk/clerk-react'
-import { useUserStore } from '../store/userStore';
+import { SignedIn, SignedOut, SignInButton, SignUpButton, UserButton } from "@clerk/clerk-react";
+import { useUserStore } from "../store/userStore";
+import { Menu, X } from "lucide-react";
 
 interface HeaderProps {
   isHome: boolean;
 }
 
-const Header: FC<HeaderProps> = ({ isHome  }) => {
-    const isAdmin = useUserStore((state) => state.isAdmin);
+const Header: FC<HeaderProps> = ({ isHome }) => {
+  const isAdmin = useUserStore((state) => state.isAdmin);
+  const [menuOpen, setMenuOpen] = useState(false);
 
-    const getNavLinkClass = (path: string) => {
-      const isActive = location.pathname.includes(path);
-      return `block py-1 px-3 rounded hover:text-blue-400 cursor-pointer transition ${
-        isActive ? "text-blue-600" : "text-white"
-      }`;
-    };
+  const getNavLinkClass = (path: string) => {
+    const isActive = location.pathname.includes(path);
+    return `block py-2 px-3 rounded hover:text-blue-400 cursor-pointer transition ${
+      isActive ? "text-blue-600" : "text-white"
+    }`;
+  };
 
-    return (
+  return (
     <header
       className={`${
         isHome
@@ -26,35 +28,33 @@ const Header: FC<HeaderProps> = ({ isHome  }) => {
       }`}
     >
       <div className="container mx-auto flex flex-wrap items-center justify-between">
+        {/* Logo */}
         <Link to={isHome ? "/" : "/tasks"} className="flex items-center gap-2">
           <img src="/logo4.png" alt="TaskHorse Logo" style={{ height: 40 }} />
         </Link>
 
+        {/* Desktop Nav */}
         {isHome ? (
-          <nav className="flex items-center gap-4">
+          <nav className="hidden md:flex items-center gap-4">
             <SignedOut>
               <SignInButton />
               <SignUpButton />
             </SignedOut>
-            
           </nav>
         ) : (
-          <nav className="flex items-center gap-6 bg-gray-800 px-4 p-2 border:none rounded-full underlined">
-            <ul className="flex space-x-2 items-center">
-              {isAdmin() && 
+          <nav className="hidden md:flex items-center gap-6 bg-gray-800 px-4 py-2 rounded-full">
+            <ul className="flex space-x-4 items-center">
+              {isAdmin() && (
                 <Link to="/dashboard" className={getNavLinkClass("/dashboard")}>
                   Dashboard
                 </Link>
-              }
-              <li>
-                
-              </li>
+              )}
               <li>
                 <Link to="/tasks" className={getNavLinkClass("/tasks")}>
                   Tasks
                 </Link>
               </li>
-              {isAdmin() && 
+              {isAdmin() && (
                 <>
                   <li>
                     <Link to="/team-members" className={getNavLinkClass("/team-members")}>
@@ -67,19 +67,61 @@ const Header: FC<HeaderProps> = ({ isHome  }) => {
                     </Link>
                   </li>
                 </>
-              }
+              )}
             </ul>
-           
           </nav>
         )}
 
+        {/* User Section */}
         <SignedIn>
           <UserButton />
         </SignedIn>
 
+        {/* Mobile Hamburger */}
+        <button
+          onClick={() => setMenuOpen(!menuOpen)}
+          className="md:hidden text-white ml-3 focus:outline-none"
+        >
+          {menuOpen ? <X size={28} /> : <Menu size={28} />}
+        </button>
       </div>
-    </header>
-  )
-}
 
-export default Header
+      {/* Mobile Dropdown Menu */}
+      {menuOpen && (
+        <div className="md:hidden bg-[#0e1525] px-6 py-4 space-y-3">
+          {isHome ? (
+            <div className="flex flex-col gap-2">
+              <SignedOut>
+                <SignInButton />
+                <SignUpButton />
+              </SignedOut>
+            </div>
+          ) : (
+            <ul className="flex flex-col gap-3">
+              {isAdmin() && (
+                <Link to="/dashboard" className={getNavLinkClass("/dashboard")}>
+                  Dashboard
+                </Link>
+              )}
+              <Link to="/tasks" className={getNavLinkClass("/tasks")}>
+                Tasks
+              </Link>
+              {isAdmin() && (
+                <>
+                  <Link to="/team-members" className={getNavLinkClass("/team-members")}>
+                    Team Members
+                  </Link>
+                  <Link to="/projects" className={getNavLinkClass("/projects")}>
+                    Projects
+                  </Link>
+                </>
+              )}
+            </ul>
+          )}
+        </div>
+      )}
+    </header>
+  );
+};
+
+export default Header;
