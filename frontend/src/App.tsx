@@ -7,7 +7,7 @@ import Tasks from './Pages/Tasks';
 import NotFound from './Pages/NotFound';
 import ViewTask from './Pages/ViewTask';
 import CreateOrganization from './Pages/Organization';
-import { SignedIn, SignedOut, RedirectToSignIn } from '@clerk/clerk-react'
+import { SignedIn } from '@clerk/clerk-react'
 import Dashboard from './Pages/Dashboard';
 import AuthRedirect from './Pages/AuthRedirect';
 import { FetchLaravelUser } from './Hooks/fetchLaravelUser';
