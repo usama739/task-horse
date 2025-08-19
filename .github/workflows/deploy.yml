@@ -120,9 +120,24 @@ jobs:
             set -e
             cd /var/www/taskhorse
             docker compose down
-            docker compose build --no-cache
-            docker compose up -d
+            docker compose up --build -d
           "    
 
       # Laravel Config & Migration
-      
+      - name: Run Artisan Commands
+        run: |
+          ssh -o StrictHostKeyChecking=no root@139.59.32.89 "
+            cd /var/www/taskhorse
+            
+            # Cache config
+            docker exec -it taskhorse-api php artisan config:cache || true
+            docker exec -it taskhorse-api php artisan route:cache || true
+            docker exec -it taskhorse-api php artisan key:generate || true
+
+            # Safe migrations
+            if ! docker exec -it taskhorse-api php artisan migrate --force; then
+              echo 'Migration failed, rolling back...'
+              docker exec -it taskhorse-api php artisan migrate:rollback --force
+              exit 1
+            fi
+          "
