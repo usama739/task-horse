@@ -52,7 +52,7 @@ jobs:
   # 2. Deployment Job
   # ------------------------------
   deploy:
-    needs: quality-checks
+    needs: quality-tests
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
     steps:
