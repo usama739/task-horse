@@ -24,7 +24,7 @@ const Header: FC<HeaderProps> = ({ isHome }) => {
       className={`${
         isHome
           ? "w-full px-6 py-4 flex justify-between items-center bg-gradient-to-r from-black via-blue-950 to-blue-700 shadow-lg"
-          : "bg-[#0e1525] py-3 px-6 fixed w-full z-20 top-0 start-0"
+          : "bg-[#0e1525] py-3 px-3 fixed w-full z-20 top-0 start-0"
       }`}
     >
       <div className="container mx-auto flex flex-wrap items-center justify-between">
@@ -33,7 +33,8 @@ const Header: FC<HeaderProps> = ({ isHome }) => {
           <img src="/logo4.png" alt="TaskHorse Logo" style={{ height: 40 }} />
         </Link>
 
-        {/* Desktop Nav */}
+
+        {/* Desktop Nav + User */}
         {isHome ? (
           <nav className="hidden md:flex items-center gap-4">
             <SignedOut>
@@ -45,40 +46,37 @@ const Header: FC<HeaderProps> = ({ isHome }) => {
           <nav className="hidden md:flex items-center gap-6 bg-gray-800 px-4 py-2 rounded-full">
             <ul className="flex space-x-4 items-center">
               {isAdmin() && (
-                <Link to="/dashboard" className={getNavLinkClass("/dashboard")}>
+                <Link to="/dashboard" className={getNavLinkClass("/dashboard")}> 
                   Dashboard
                 </Link>
               )}
               <li>
-                <Link to="/tasks" className={getNavLinkClass("/tasks")}>
+                <Link to="/tasks" className={getNavLinkClass("/tasks")}> 
                   Tasks
                 </Link>
               </li>
               {isAdmin() && (
                 <>
                   <li>
-                    <Link to="/team-members" className={getNavLinkClass("/team-members")}>
+                    <Link to="/team-members" className={getNavLinkClass("/team-members")}> 
                       Team Members
                     </Link>
                   </li>
                   <li>
-                    <Link to="/projects" className={getNavLinkClass("/projects")}>
+                    <Link to="/projects" className={getNavLinkClass("/projects")}> 
                       Projects
                     </Link>
                   </li>
                 </>
               )}
+              <li>
+                <SignedIn>
+                  <UserButton />
+                </SignedIn>
+              </li>
             </ul>
           </nav>
         )}
-
-
-        {/* User Section - Desktop only */}
-        <div className="hidden md:block">
-          <SignedIn>
-            <UserButton />
-          </SignedIn>
-        </div>
 
         {/* Mobile Hamburger */}
         <button
@@ -91,7 +89,7 @@ const Header: FC<HeaderProps> = ({ isHome }) => {
 
       {/* Mobile Dropdown Menu */}
       {menuOpen && (
-        <div className="md:hidden bg-[#0e1525] px-6 py-4 space-y-3">
+        <div className="md:hidden bg-[#0e1525] px-6 py-4 space-y-3 absolute left-0 right-0 top-full w-full z-30 shadow-2xl border-b border-blue-900">
           {isHome ? (
             <div className="flex flex-col gap-2">
               <SignedOut>
