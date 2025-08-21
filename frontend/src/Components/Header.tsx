@@ -43,7 +43,7 @@ const Header: FC<HeaderProps> = ({ isHome }) => {
             </SignedOut>
           </nav>
         ) : (
-          <nav className="hidden md:flex items-center gap-6 bg-gray-800 px-4 py-2 rounded-full">
+          <nav className="hidden md:flex items-center gap-6 bg-gray-800 px-4 py-1 rounded-full">
             <ul className="flex space-x-4 items-center">
               {isAdmin() && (
                 <Link to="/dashboard" className={getNavLinkClass("/dashboard")}> 
