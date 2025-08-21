@@ -73,9 +73,9 @@ const Header: FC<HeaderProps> = ({ isHome }) => {
         )}
 
         {/* User Section */}
-            <SignedIn>
-              <UserButton />
-            </SignedIn>
+        <SignedIn>
+          <UserButton />
+        </SignedIn>
 
         {/* Mobile Hamburger */}
         <button
