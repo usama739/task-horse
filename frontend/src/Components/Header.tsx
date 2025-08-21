@@ -73,9 +73,11 @@ const Header: FC<HeaderProps> = ({ isHome }) => {
         )}
 
         {/* User Section */}
-        <SignedIn>
-          <UserButton />
-        </SignedIn>
+          <nav className="hidden md:flex">
+            <SignedIn>
+              <UserButton />
+            </SignedIn>
+          </nav>
 
         {/* Mobile Hamburger */}
         <button
@@ -116,6 +118,12 @@ const Header: FC<HeaderProps> = ({ isHome }) => {
                   </Link>
                 </>
               )}
+              
+              {/* User Section */}
+              <SignedIn>
+                <UserButton />
+              </SignedIn>
+              
             </ul>
           )}
         </div>
