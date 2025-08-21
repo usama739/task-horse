@@ -72,10 +72,13 @@ const Header: FC<HeaderProps> = ({ isHome }) => {
           </nav>
         )}
 
-        {/* User Section */}
-        <SignedIn>
-          <UserButton />
-        </SignedIn>
+
+        {/* User Section - Desktop only */}
+        <div className="hidden md:block">
+          <SignedIn>
+            <UserButton />
+          </SignedIn>
+        </div>
 
         {/* Mobile Hamburger */}
         <button
@@ -95,33 +98,37 @@ const Header: FC<HeaderProps> = ({ isHome }) => {
                 <SignInButton />
                 <SignUpButton />
               </SignedOut>
+              <SignedIn>
+                <UserButton />
+              </SignedIn>
             </div>
           ) : (
             <ul className="flex flex-col gap-3">
               {isAdmin() && (
-                <Link to="/dashboard" className={getNavLinkClass("/dashboard")}>
+                <Link to="/dashboard" className={getNavLinkClass("/dashboard")}> 
                   Dashboard
                 </Link>
               )}
-              <Link to="/tasks" className={getNavLinkClass("/tasks")}>
+              <Link to="/tasks" className={getNavLinkClass("/tasks")}> 
                 Tasks
               </Link>
               {isAdmin() && (
                 <>
-                  <Link to="/team-members" className={getNavLinkClass("/team-members")}>
+                  <Link to="/team-members" className={getNavLinkClass("/team-members")}> 
                     Team Members
                   </Link>
-                  <Link to="/projects" className={getNavLinkClass("/projects")}>
+                  <Link to="/projects" className={getNavLinkClass("/projects")}> 
                     Projects
                   </Link>
                 </>
               )}
-              
-              {/* User Section */}
+              <SignedOut>
+                <SignInButton />
+                <SignUpButton />
+              </SignedOut>
               <SignedIn>
                 <UserButton />
               </SignedIn>
-              
             </ul>
           )}
         </div>
