@@ -89,7 +89,7 @@ const Header: FC<HeaderProps> = ({ isHome }) => {
 
       {/* Mobile Dropdown Menu */}
       {menuOpen && (
-        <div className="md:hidden bg-[#0e1525] px-6 py-4 space-y-3 shadow-2xl border-b border-blue-900">
+        <div className="md:hidden bg-[#0e1525] px-6 py-4 space-y-3">
           {isHome ? (
             <div className="flex flex-col gap-2">
               <SignedOut>
