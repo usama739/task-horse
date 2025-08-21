@@ -23,7 +23,7 @@ const Header: FC<HeaderProps> = ({ isHome }) => {
     <header
       className={`${
         isHome
-          ? "w-full px-6 py-4 flex justify-between items-center bg-gradient-to-r from-black via-blue-950 to-blue-700 shadow-lg"
+          ? "w-full px-6 py-4 bg-gradient-to-r from-black via-blue-950 to-blue-700 shadow-lg"
           : "bg-[#0e1525] py-3 px-3 fixed w-full z-20 top-0 start-0"
       }`}
     >
