@@ -375,7 +375,7 @@ const TasksPage: React.FC = () => {
                   <input 
                       type="search" 
                       id="search" 
-                      className="block w-full p-2 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" 
+                      className="block w-full p-2 ps-10 text-sm bg-gray-900 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 border-blue-700 dark:placeholder-gray-400" 
                       placeholder="Search Tasks..."
                       value={search}
                       onChange={(e: ChangeEvent<HTMLInputElement>) => setSearch(e.target.value)}
