@@ -1,3 +1,4 @@
+import { SignUpButton } from "@clerk/clerk-react";
 import { motion } from 'framer-motion'
 
 function HeroSection() {
@@ -15,9 +16,11 @@ function HeroSection() {
         <p className=" text-blue-100 mb-10 font-medium">
           A cloud‑powered task management tool built for teams who value speed, simplicity, and clarity
         </p>
-        <a href="/register" className="inline-block bg-gradient-to-r from-cyan-400 to-blue-600 hover:from-blue-500 hover:to-blue-500 text-white font-bold py-4 px-5 rounded-lg shadow-lg text-lg transition mt-10">
-          Start Free Trial
-        </a>
+        <SignUpButton>
+          <button className="inline-block bg-gradient-to-r from-cyan-400 to-blue-600 hover:from-blue-500 hover:to-blue-500 text-white font-bold py-4 px-5 rounded-lg shadow-lg text-lg transition mt-10">
+            Start Free Trial
+          </button>
+        </SignUpButton>
         <div className="mt-8 flex flex-wrap justify-center gap-4">
           {[
             { icon: 'fa-users', label: 'Team Collaboration', iconColor: 'text-blue-300', textColor: 'text-blue-100' },
