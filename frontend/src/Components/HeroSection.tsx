@@ -4,16 +4,16 @@ import { motion } from 'framer-motion'
 function HeroSection() {
   return (
     <>
-    <section className="relative flex-1 flex items-center justify-center bg-gradient-to-br from-black via-blue-950 to-blue-700 py-[80px] md:py-[145px] px-6 clip-bottom-diagonal">
+    <section className="relative flex-1 flex items-center justify-center bg-gradient-to-br from-black via-blue-950 to-blue-700 py-[70px] md:py-[145px] px-6 clip-bottom-diagonal">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.2, duration: 0.8 }}  
         className="max-w-5xl mx-auto text-center z-10">
-        <h1 className="text-5xl md:text-6xl font-extrabold leading-tight mb-6 bg-gradient-to-r from-blue-400 via-cyan-400 to-green-300 bg-clip-text text-white  parallax-title drop-shadow-lg">
+        <h1 className="text-4xl font-bold md:text-6xl md:font-extrabold leading-tight mb-3 md:mb-6 bg-gradient-to-r from-blue-400 via-cyan-400 to-green-300 bg-clip-text text-white  parallax-title drop-shadow-lg">
           Stay on Track. Get Things Done.
         </h1>
-        <p className=" text-blue-100 font-semibold text-lg md:text-xl">
+        <p className=" text-blue-100 font-semibold text-xs md:text-xl">
           A cloud‑powered task management tool built for teams who value speed, simplicity, and clarity
         </p>
         <SignUpButton>
